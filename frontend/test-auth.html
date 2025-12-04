@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Authentication - AlignAI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Monaco', 'Courier New', monospace;
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #0a0a0a;
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 2rem;
+        }
+
+        h1 {
+            color: #00ff00;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .test-section {
+            margin: 2rem 0;
+            padding: 1rem;
+            border: 1px solid #333;
+            border-radius: 5px;
+        }
+
+        .test-section h2 {
+            color: #ffff00;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        button {
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            margin: 0.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: 'Monaco', monospace;
+        }
+
+        button:hover {
+            background: #00cc00;
+        }
+
+        .result {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #000;
+            border-left: 4px solid #00ff00;
+            white-space: pre-wrap;
+            font-size: 0.9rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .success {
+            border-left-color: #00ff00;
+            color: #00ff00;
+        }
+
+        .error {
+            border-left-color: #ff0000;
+            color: #ff6666;
+        }
+
+        .info {
+            border-left-color: #ffff00;
+            color: #ffff00;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 3px;
+            font-size: 0.85rem;
+            margin-left: 0.5rem;
+        }
+
+        .status.online {
+            background: #00ff00;
+            color: #000;
+        }
+
+        .status.offline {
+            background: #ff0000;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 AlignAI Authentication Test Console</h1>
+
+        <div class="test-section">
+            <h2>Step 1: Check Servers <span id="serverStatus" class="status">Checking...</span></h2>
+            <button onclick="checkServers()">🔍 Check All Servers</button>
+            <div id="serverResult" class="result info">Click the button to check if all servers are running...</div>
+        </div>
+
+        <div class="test-section">
+            <h2>Step 2: Check Cookies <span id="cookieStatus" class="status">Checking...</span></h2>
+            <button onclick="checkCookies()">🍪 Check Cookies</button>
+            <div id="cookieResult" class="result info">Click the button to check if auth cookies exist...</div>
+        </div>
+
+        <div class="test-section">
+            <h2>Step 3: Test Authentication <span id="authStatus" class="status">Checking...</span></h2>
+            <button onclick="testAuthServer()">🔐 Test Backend</button>
+            <div id="authResult" class="result info">Click the button to test authentication with backend server...</div>
+        </div>
+
+        <div class="test-section">
+            <h2>Actions</h2>
+            <button onclick="window.location.href='clear-session.html'">🧹 Clear Session</button>
+            <button onclick="window.location.href='login.html'">🔑 Go to Login</button>
+            <button onclick="window.location.href='dashboard.html'">📊 Go to Dashboard</button>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';  // Single unified backend
+
+        async function checkServers() {
+            const result = document.getElementById('serverResult');
+            const status = document.getElementById('serverStatus');
+            result.className = 'result info';
+            result.textContent = 'Checking servers...\n';
+
+            const servers = [
+                { name: 'Backend Server', url: 'http://localhost:5000/api/health', port: 5000 },
+                { name: 'Frontend Server', url: 'http://localhost:8000/', port: 8000 }
+            ];
+
+            let allOnline = true;
+
+            for (const server of servers) {
+                try {
+                    const response = await fetch(server.url, { method: 'GET' });
+                    if (response.ok) {
+                        result.textContent += `✅ ${server.name} (Port ${server.port}): ONLINE\n`;
+                    } else {
+                        result.textContent += `⚠️  ${server.name} (Port ${server.port}): Responded but not healthy\n`;
+                        allOnline = false;
+                    }
+                } catch (error) {
+                    result.textContent += `❌ ${server.name} (Port ${server.port}): OFFLINE\n`;
+                    allOnline = false;
+                }
+            }
+
+            if (allOnline) {
+                result.className = 'result success';
+                status.className = 'status online';
+                status.textContent = 'ALL ONLINE';
+            } else {
+                result.className = 'result error';
+                status.className = 'status offline';
+                status.textContent = 'SOME OFFLINE';
+            }
+        }
+
+        function checkCookies() {
+            const result = document.getElementById('cookieResult');
+            const status = document.getElementById('cookieStatus');
+            
+            const cookies = document.cookie.split(';').map(c => c.trim());
+            const sessionCookie = cookies.find(c => c.startsWith('alignai_session='));
+
+            result.textContent = 'Current Cookies:\n\n';
+            
+            if (cookies.length === 0 || (cookies.length === 1 && cookies[0] === '')) {
+                result.textContent += '❌ NO COOKIES FOUND\n\n';
+                result.textContent += 'This means you are NOT logged in.\n';
+                result.textContent += 'Go to login page and login first.';
+                result.className = 'result error';
+                status.className = 'status offline';
+                status.textContent = 'NO COOKIES';
+            } else {
+                cookies.forEach(cookie => {
+                    const [name, value] = cookie.split('=');
+                    result.textContent += `📝 ${name} = ${value.substring(0, 30)}...\n`;
+                });
+
+                if (sessionCookie) {
+                    result.textContent += '\n✅ Session cookie found!\n';
+                    result.textContent += 'You should be authenticated.';
+                    result.className = 'result success';
+                    status.className = 'status online';
+                    status.textContent = 'COOKIES OK';
+                } else {
+                    result.textContent += '\n⚠️  No alignai_session cookie found.\n';
+                    result.textContent += 'You might need to login again.';
+                    result.className = 'result error';
+                    status.className = 'status offline';
+                    status.textContent = 'NO SESSION';
+                }
+            }
+        }
+
+        async function testAuthServer() {
+            const result = document.getElementById('authResult');
+            const status = document.getElementById('authStatus');
+            result.className = 'result info';
+            result.textContent = 'Testing backend server...\n';
+
+            try:
+                const response = await fetch(`${API_URL}/auth/check-session`, {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const data = await response.json();
+                
+                result.textContent += `Status Code: ${response.status}\n\n`;
+                result.textContent += `Response:\n${JSON.stringify(data, null, 2)}\n\n`;
+
+                if (data.authenticated) {
+                    result.textContent += `✅ AUTHENTICATED\n`;
+                    result.textContent += `User: ${data.user.full_name}\n`;
+                    result.textContent += `Email: ${data.user.email}`;
+                    result.className = 'result success';
+                    status.className = 'status online';
+                    status.textContent = 'AUTHENTICATED';
+                } else {
+                    result.textContent += `❌ NOT AUTHENTICATED\n`;
+                    result.textContent += 'Please login first.';
+                    result.className = 'result error';
+                    status.className = 'status offline';
+                    status.textContent = 'NOT AUTH';
+                }
+            } catch (error) {
+                result.textContent += `❌ ERROR: ${error.message}\n`;
+                result.textContent += 'Auth server might be offline.';
+                result.className = 'result error';
+                status.className = 'status offline';
+                status.textContent = 'ERROR';
+            }
+        }
+
+        // Auto-check on load
+        window.addEventListener('load', () => {
+            checkServers();
+            setTimeout(checkCookies, 500);
+        });
+    </script>
+</body>
+</html>
+

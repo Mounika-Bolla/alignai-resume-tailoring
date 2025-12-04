@@ -1,0 +1,240 @@
+%-------------------------
+% Resume in LaTeX
+% Author : Mounika Bolla
+%------------------------
+
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+\usepackage{fontawesome5}
+\usepackage{multicol}
+\setlength{\multicolsep}{-3.0pt}
+\setlength{\columnsep}{-1pt}
+\input{glyphtounicode}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Adjust margins
+\addtolength{\oddsidemargin}{-0.6in}
+\addtolength{\evensidemargin}{-0.5in}
+\addtolength{\textwidth}{1.19in}
+\addtolength{\topmargin}{-.7in}
+\addtolength{\textheight}{1.4in}
+
+\urlstyle{same}
+
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+% Sections formatting
+\titleformat{\section}{
+  \vspace{-4pt}\scshape\raggedright\large\bfseries
+}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
+
+% Ensure PDF is machine readable
+\pdfgentounicode=1
+
+%-------------------------
+% Custom commands
+\newcommand{\resumeItem}[1]{
+  \item\small{
+    {#1 \vspace{-2pt}}
+  }
+}
+
+\newcommand{\classesList}[4]{
+    \item\small{
+        {#1 #2 #3 #4 \vspace{-2pt}}
+  }
+}
+
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-2pt}\item
+    \begin{tabular*}{1.0\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & \textbf{\small #2} \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeSubSubheading}[2]{
+    \item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \textit{\small#1} & \textit{\small #2} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeProjectHeading}[2]{
+    \item
+    \begin{tabular*}{1.001\textwidth}{l@{\extracolsep{\fill}}r}
+      \small#1 & \textbf{\small #2}\\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeSubItem}[1]{\resumeItem{#1}\vspace{-4pt}}
+
+\renewcommand\labelitemi{$\vcenter{\hbox{\tiny$\bullet$}}$}
+\renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.0in, label={}]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
+
+%-------------------------------------------
+%%%%%%  RESUME STARTS HERE  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\begin{center}
+    {\Huge \scshape CHANAKYA} \\ \vspace{1pt}
+    \small \raisebox{-0.1\height}\faPhone\ (555) 123-4567 ~ 
+    \href{mailto:chanakya@email.com}{\raisebox{-0.2\height}\faEnvelope\ chanakya@email.com} ~ 
+    \href{https://linkedin.com/in/chanakya}{\raisebox{-0.2\height}\faLinkedin\ LinkedIn} ~
+    \href{https://github.com/chanakya-ml}{\raisebox{-0.2\height}\faGithub\ GitHub} ~
+    \href{https://chanakya-portfolio.com}{\raisebox{-0.2\height}\faLink\ Portfolio}
+    \vspace{-8pt}
+\end{center}
+
+\section{Summary}
+Highly accomplished Machine Learning Engineer with 4+ years of experience, pursuing an MS in AI Systems. Specializing in the architecture, development, and deployment of production-grade Large Language Model (LLM) and Transformer-based AI solutions across scalable cloud environments (AWS, Azure). Expert in Python, PyTorch, TensorFlow, Computer Vision, and real-time inference systems, with a proven track record of leadership, active open-source contributions, and driving impactful ML projects from concept to deployment.
+
+\section{Technical Skills}
+ \begin{itemize}[leftmargin=0.15in, label={}]
+    \small{\item{
+     \textbf{Programming Languages:} Python (Expert), SQL \\
+     \textbf{ML Frameworks \& Libraries:} PyTorch, TensorFlow, Transformers (Hugging Face), OpenCV, scikit-learn \\
+     \textbf{Cloud Platforms \& MLOps:} AWS (Certified), Azure, Docker, Kubernetes, Git, CI/CD, REST APIs, MLflow \\
+     \textbf{Core ML/AI Expertise:} Machine Learning, Deep Learning, Large Language Models (LLMs), Transformers, Computer Vision, Real-time Inference Systems, MLOps, Generative AI \\
+     \textbf{Tools \& Methodologies:} Agile, Project Management, Data Visualization, Backtesting, Performance Optimization
+    }}
+ \end{itemize}
+\vspace{-16pt}
+
+\section{Professional Experience}
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {\textbf{Machine Learning Engineer}}{2023 – 2024}
+      {Attacked.ai}{Gainesville, FL}
+      \resumeItemListStart
+        \resumeItem{Architected and developed agentic AI pipelines for automated workflows, leveraging advanced LLM integration to enhance system autonomy.}
+        \resumeItem{Engineered and deployed production-grade LLM-based security detection systems to AWS using Docker and Kubernetes, ensuring scalability and robust performance.}
+        \resumeItem{Implemented comprehensive monitoring and logging solutions for deployed ML systems, ensuring high reliability and proactive performance optimization.}
+        \resumeItem{Led and mentored a team of 3 junior machine learning engineers, overseeing project execution, code reviews, and fostering technical growth.}
+      \resumeItemListEnd
+    \resumeSubheading
+      {\textbf{ML Engineer}}{2022 – 2023}
+      {h2o.ai}{Remote}
+      \resumeItemListStart
+        \resumeItem{Developed and fine-tuned state-of-the-art transformer models for domain-specific natural language understanding tasks, enhancing model accuracy by approximately 15-20\%.}
+        \resumeItem{Collaborated effectively within cross-functional research teams to explore and implement novel AI architectures and LLM security protocols.}
+        \resumeItem{Contributed to public technical knowledge sharing by publishing influential blog posts on advanced ML topics, showcasing company expertise.}
+      \resumeItemListEnd
+    \resumeSubheading
+      {\textbf{Quantitative Developer}}{2021 – 2022}
+      {Hedge Vantage}{Remote}
+      \resumeItemListStart
+        \resumeItem{Built and deployed quantitative trading models utilizing advanced machine learning techniques to identify market opportunities.}
+        \resumeItem{Developed real-time prediction systems for financial markets, processing large-scale datasets with low latency.}
+        \resumeItem{Executed rigorous backtesting and optimization of trading strategies, resulting in enhanced model robustness and profitability.}
+      \resumeItemListEnd
+    \resumeSubheading
+      {\textbf{Computer Vision Engineer}}{2020 – 2021}
+      {ESAB}{Remote}
+      \resumeItemListStart
+        \resumeItem{Developed and optimized industrial computer vision applications for precise object detection and classification using YOLOv7.}
+        \resumeItem{Achieved significant real-time inference optimization for edge devices, reducing inference time by 40\% and enhancing operational efficiency.}
+        \resumeItem{Implemented robust CV solutions that improved quality control and automated inspection processes in manufacturing environments.}
+      \resumeItemListEnd
+  \resumeSubHeadingListEnd
+\vspace{-16pt}
+
+\section{Key Projects}
+    \vspace{-5pt}
+    \resumeSubHeadingListStart
+      \resumeProjectHeading
+          {\textbf{AI Educator System} $|$ \emph{LLMs, Voice Agents, Python, PyTorch, AWS}},{2024}
+          \resumeItemListStart
+            \resumeItem{Designed and developed an interactive learning platform leveraging LLM integration for personalized content generation and adaptive learning experiences.}
+            \resumeItem{Implemented real-time voice agents to facilitate dynamic and engaging educational interactions, enhancing user engagement and accessibility. \href{https://github.com/chanakya-ml/ai-educator}{\faGithub\ GitHub}}
+          \end{resumeItemListStart}
+          \vspace{-13pt}
+      \resumeProjectHeading
+          {\textbf{Violence Detection System (Violens)} $|$ \emph{Computer Vision, Real-time Analysis, YOLOv7, TensorFlow}},{2023}
+          \resumeItemListStart
+            \resumeItem{Developed a real-time video analysis system utilizing advanced computer vision techniques for proactive safety applications.}
+            \resumeItem{Engineered robust object detection and classification models to identify critical events with high accuracy, minimizing false positives.}
+          \end{resumeItemListStart}
+          \vspace{-13pt}
+      \resumeProjectHeading
+          {\textbf{FINTRA AI} $|$ \emph{ML, Financial NLP, Python}},{2022}
+          \resumeItemListStart
+            \resumeItem{Created a financial research platform with AI-powered market analysis capabilities, providing data-driven insights to users.}
+            \resumeItem{Integrated natural language processing (NLP) models to extract and analyze market sentiment from diverse financial news sources.}
+          \end{resumeItemListStart}
+          \vspace{-13pt}
+    \resumeSubHeadingListEnd
+
+\section{Education}
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {\textbf{Master of Science in AI Systems}}{Gainesville, FL}
+      {University of Florida}{2024 – Present}
+      \resumeItemListStart
+        \resumeItem{Focus: Machine Learning, Deep Learning, Computer Vision, LLMs, AI Systems Design}
+        \resumeItem{Graduate Research Assistant; GPA: 3.9/4.0}
+      \end{resumeItemListStart}
+    \resumeSubheading
+      {\textbf{Bachelor of Technology in Computer Science}}{[City, State - Not Provided]}
+      {[Institution Name - Not Provided]}{2020}
+      \resumeItemListStart
+        \resumeItem{Published IEEE research paper on optimization algorithms, receiving the Best Paper Award at the IEEE Conference 2020.}
+        \resumeItem{Achieved Dean's List all semesters for outstanding academic performance.}
+      \end{resumeItemListStart}
+  \resumeSubHeadingListEnd
+\vspace{-12pt}
+
+\section{Leadership \& Community Engagement}
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {\textbf{President, AI/ML Student Club}}{University of Florida}
+      \resumeItemListStart
+        \resumeItem{Led a vibrant community of AI/ML enthusiasts, organizing workshops, speaker events, and hackathons.}
+        \resumeItem{Mentored numerous students in machine learning concepts and project development, fostering a collaborative learning environment.}
+      \end{resumeItemListStart}
+    \resumeSubheading
+      {\textbf{Open Source Contributor \& Technical Speaker}}{Global / Local Tech Meetups}
+      \resumeItemListStart
+        \resumeItem{Recognized as a Top 1\% contributor on GitHub in AI/ML repositories, with 500+ active contributions.}
+        \resumeItem{Authored popular technical blogs on Medium (\textgreater10K followers) and presented at local tech meetups on advanced ML topics, demonstrating strong technical communication.}
+        \resumeItem{Organized and mentored at 3 hackathon events with 200+ participants, promoting innovation and problem-solving.}
+        \resumeItem{Volunteered as a coding instructor for underrepresented high school students, promoting STEM education.}
+      \end{resumeItemListStart}
+  \resumeSubHeadingListEnd
+
+\section{Certifications}
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {\textbf{AWS Certified Machine Learning - Specialty}}{Amazon Web Services}
+    \resumeSubheading
+      {\textbf{TensorFlow Developer Certificate}}{Google}
+    \resumeSubheading
+      {\textbf{Deep Learning Specialization}}{Coursera}
+  \resumeSubHeadingListEnd
+\vspace{-16pt}
+
+\end{document}

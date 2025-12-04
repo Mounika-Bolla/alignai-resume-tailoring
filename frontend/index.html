@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlignAI - Smart Resume Alignment</title>
+    
+    <!-- Google Fonts - Clean Professional Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(-45deg, #f5ede6, #E5CDB8, #f0e1d2, #d9c3b0);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            color: #2d2416;
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Decorative Background Elements */
+        body::before,
+        body::after {
+            content: '';
+            position: fixed;
+            border-radius: 50%;
+            opacity: 0.15;
+            z-index: -1;
+        }
+
+        body::before {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, #E5CDB8, transparent);
+            top: -200px;
+            right: -200px;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        body::after {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, #d4b89e, transparent);
+            bottom: -150px;
+            left: -150px;
+            animation: float 25s ease-in-out infinite reverse;
+        }
+
+        /* Particle Container */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: radial-gradient(circle, #E5CDB8, transparent);
+            border-radius: 50%;
+            animation: particleFloat linear infinite;
+        }
+
+        .particle:nth-child(1) { left: 10%; animation-duration: 15s; animation-delay: 0s; }
+        .particle:nth-child(2) { left: 20%; animation-duration: 12s; animation-delay: 2s; }
+        .particle:nth-child(3) { left: 30%; animation-duration: 18s; animation-delay: 1s; }
+        .particle:nth-child(4) { left: 40%; animation-duration: 14s; animation-delay: 3s; }
+        .particle:nth-child(5) { left: 50%; animation-duration: 16s; animation-delay: 0s; }
+        .particle:nth-child(6) { left: 60%; animation-duration: 13s; animation-delay: 4s; }
+        .particle:nth-child(7) { left: 70%; animation-duration: 17s; animation-delay: 2s; }
+        .particle:nth-child(8) { left: 80%; animation-duration: 15s; animation-delay: 1s; }
+        .particle:nth-child(9) { left: 90%; animation-duration: 19s; animation-delay: 3s; }
+        .particle:nth-child(10) { left: 15%; animation-duration: 14s; animation-delay: 5s; }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+            33% {
+                transform: translate(50px, -30px) scale(1.1);
+            }
+            66% {
+                transform: translate(-30px, 50px) scale(0.9);
+            }
+        }
+
+        /* Animated Gradient Background */
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* Particle Animation */
+        @keyframes particleFloat {
+            0% {
+                transform: translateY(0) translateX(0) scale(1);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(50px) scale(0.5);
+                opacity: 0;
+            }
+        }
+
+        /* Pulse Glow */
+        @keyframes pulseGlow {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(229, 205, 184, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 40px rgba(229, 205, 184, 0.6);
+            }
+        }
+
+        /* Shimmer Effect */
+        @keyframes shimmer {
+            0% {
+                background-position: -1000px 0;
+            }
+            100% {
+                background-position: 1000px 0;
+            }
+        }
+
+        /* Scale In */
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Slide In From Left */
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Slide In From Right */
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Navigation Bar */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 25px 60px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 2px solid #E5CDB8;
+            box-shadow: 0 2px 10px rgba(229, 205, 184, 0.3);
+            animation: slideInLeft 0.8s ease-out;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            letter-spacing: -0.5px;
+            text-decoration: none;
+        }
+
+        .logo-image {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: white;
+            padding: 2px;
+            box-shadow: 0 2px 10px rgba(229, 205, 184, 0.4);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .logo:hover .logo-image {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(229, 205, 184, 0.6);
+        }
+
+        .logo-text {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2d2416;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 35px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #1a1a1a;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 400;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #c9a88a;
+        }
+
+        /* Hero Section with Image */
+        .hero-section {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 60px 60px 80px 60px;
+        }
+
+        .hero-intro {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .hero-intro h1 {
+            font-size: 3.5rem;
+            font-weight: 400;
+            color: #2d2416;
+            letter-spacing: -1px;
+            margin-bottom: 20px;
+            animation: scaleIn 1s ease-out;
+        }
+
+        .hero-intro p {
+            font-size: 1.2rem;
+            color: #6a5a47;
+            font-weight: 300;
+            animation: scaleIn 1s ease-out 0.3s backwards;
+        }
+
+        .hero-images-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .hero-image-card {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(229, 205, 184, 0.4);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            background: white;
+            border: 3px solid #E5CDB8;
+        }
+
+        .hero-image-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .hero-image-card:hover::before {
+            left: 100%;
+        }
+
+        .hero-image-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 30px 80px rgba(229, 205, 184, 0.6);
+            animation: pulseGlow 2s ease-in-out infinite;
+        }
+
+        .hero-image-card:nth-child(1) {
+            animation: slideInLeft 1s ease-out 0.5s backwards;
+        }
+
+        .hero-image-card:nth-child(2) {
+            animation: slideInRight 1s ease-out 0.5s backwards;
+        }
+
+        .hero-image-card img {
+            width: 100%;
+            height: 500px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .image-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(45, 36, 22, 0.9), transparent);
+            padding: 30px;
+            color: white;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .hero-image-card:hover .image-overlay {
+            opacity: 1;
+        }
+
+        .image-overlay h3 {
+            font-size: 1.4rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .image-overlay p {
+            font-size: 0.95rem;
+            color: #e8dfd2;
+        }
+
+        /* Services Section */
+        .services-section {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 60px 100px 60px;
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 80px;
+            align-items: start;
+        }
+
+        .services-title {
+            font-size: 3.5rem;
+            font-weight: 400;
+            color: #1a1a1a;
+            line-height: 1.1;
+            letter-spacing: -1px;
+        }
+
+        .services-description {
+            font-size: 1.05rem;
+            color: #4a4a4a;
+            line-height: 1.8;
+            font-weight: 400;
+        }
+
+        /* How It Works Section */
+        .how-it-works {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 100px 60px;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            margin-bottom: 60px;
+            border: 2px solid #E5CDB8;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 70px;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            font-weight: 400;
+            color: #1a1a1a;
+            letter-spacing: -0.5px;
+            margin-bottom: 15px;
+        }
+
+        .section-header p {
+            font-size: 1.05rem;
+            color: #6a6a6a;
+            font-weight: 400;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
+        }
+
+        .step-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f9f5f0 100%);
+            padding: 40px 30px;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.4s ease;
+            border: 2px solid #E5CDB8;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .step-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(229, 205, 184, 0.1), transparent);
+            transform: rotate(45deg);
+            animation: shimmer 3s infinite;
+        }
+
+        .step-card:hover {
+            transform: translateY(-12px) scale(1.03);
+            box-shadow: 0 20px 50px rgba(229, 205, 184, 0.5);
+            border-color: #c9a88a;
+        }
+
+        .step-number {
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #E5CDB8 0%, #c9a88a 100%);
+            color: #3d2e1f;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 0 auto 25px;
+            box-shadow: 0 5px 15px rgba(229, 205, 184, 0.5);
+            animation: pulseGlow 3s ease-in-out infinite;
+            transition: transform 0.3s ease;
+        }
+
+        .step-card:hover .step-number {
+            transform: rotate(360deg) scale(1.1);
+        }
+
+        .step-icon {
+            font-size: 2.5rem;
+            color: #c9a88a;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .step-card:hover .step-icon {
+            transform: scale(1.2) translateY(-5px);
+        }
+
+
+        .step-card h3 {
+            font-size: 1.15rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+        }
+
+        .step-card p {
+            font-size: 0.95rem;
+            color: #6a6a6a;
+            line-height: 1.6;
+        }
+
+        /* Features Section */
+        .features-section {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 100px 60px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 50px;
+        }
+
+        .feature-item {
+            display: flex;
+            gap: 25px;
+        }
+
+        .feature-icon {
+            width: 65px;
+            height: 65px;
+            background: linear-gradient(135deg, #f9f5f0 0%, #f0ebe3 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            border: 3px solid #E5CDB8;
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover .feature-icon {
+            background: linear-gradient(135deg, #E5CDB8 0%, #c9a88a 100%);
+            border-color: #c9a88a;
+            transform: scale(1.1);
+        }
+
+        .feature-icon i {
+            font-size: 1.6rem;
+            color: #c9a88a;
+            transition: color 0.3s ease;
+        }
+
+        .feature-item:hover .feature-icon i {
+            color: #3d2e1f;
+        }
+
+        .feature-content h3 {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+        }
+
+        .feature-content p {
+            font-size: 0.95rem;
+            color: #6a6a6a;
+            line-height: 1.7;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            max-width: 1400px;
+            margin: 60px auto 80px auto;
+            padding: 80px 60px;
+            background: linear-gradient(135deg, #3d2e1f 0%, #2d2416 100%);
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(229, 205, 184, 0.4);
+            position: relative;
+            overflow: hidden;
+            border: 4px solid #E5CDB8;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #E5CDB8 0%, #c9a88a 50%, #E5CDB8 100%);
+        }
+
+        .cta-section h2 {
+            font-size: 2.5rem;
+            font-weight: 400;
+            color: #ffffff;
+            margin-bottom: 20px;
+            letter-spacing: -0.5px;
+        }
+
+        .cta-section p {
+            font-size: 1.1rem;
+            color: #b8b8b8;
+            margin-bottom: 35px;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 16px 45px;
+            background: linear-gradient(135deg, #E5CDB8 0%, #c9a88a 100%);
+            color: #2d2416;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            transition: all 0.4s ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(229, 205, 184, 0.4);
+            position: relative;
+            overflow: hidden;
+            animation: pulseGlow 2.5s ease-in-out infinite;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+
+        .cta-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .cta-button:hover {
+            background: linear-gradient(135deg, #c9a88a 0%, #E5CDB8 100%);
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 12px 40px rgba(229, 205, 184, 0.7);
+        }
+
+        .ripple-effect {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.6);
+            transform: scale(0);
+            animation: ripple 0.6s ease-out;
+            pointer-events: none;
+        }
+
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* Contact Section */
+        .contact-section {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 100px 60px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 3px solid #E5CDB8;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 80px;
+        }
+
+        .contact-info h2 {
+            font-size: 2.5rem;
+            font-weight: 400;
+            color: #1a1a1a;
+            margin-bottom: 30px;
+            letter-spacing: -0.5px;
+        }
+
+        .contact-details {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 0.95rem;
+            color: #4a4a4a;
+        }
+
+        .contact-item i {
+            width: 20px;
+            color: #c9a88a;
+            font-weight: 600;
+        }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(135deg, #3d2e1f 0%, #2d2416 100%);
+            color: #E5CDB8;
+            padding: 50px 60px;
+            text-align: center;
+            font-size: 0.9rem;
+            border-top: 4px solid #E5CDB8;
+            margin-top: 60px;
+        }
+
+        footer a {
+            color: #E5CDB8;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-weight: 500;
+        }
+
+        footer a:hover {
+            color: #f5ede6;
+        }
+
+        /* Mobile Menu Toggle */
+        .mobile-menu-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        .mobile-menu-toggle span {
+            width: 25px;
+            height: 3px;
+            background: #c9a88a;
+            transition: 0.3s;
+            border-radius: 2px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            nav {
+                padding: 20px 40px;
+            }
+
+            .hero-section,
+            .services-section,
+            .how-it-works,
+            .features-section,
+            .contact-section {
+                padding-left: 40px;
+                padding-right: 40px;
+            }
+
+            .services-section {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .services-title {
+                font-size: 3rem;
+            }
+
+            .steps-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 30px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .contact-grid {
+                grid-template-columns: 1fr;
+                gap: 50px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                padding: 20px 25px;
+            }
+
+            .logo-image {
+                width: 38px;
+                height: 38px;
+            }
+
+            .logo-text {
+                font-size: 1.1rem;
+            }
+
+            .mobile-menu-toggle {
+                display: flex;
+            }
+
+            .nav-links {
+                position: absolute;
+                top: 70px;
+                left: 0;
+                right: 0;
+                background: white;
+                flex-direction: column;
+                padding: 20px;
+                gap: 20px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+                display: none;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .hero-section,
+            .services-section,
+            .how-it-works,
+            .features-section,
+            .contact-section,
+            .cta-section {
+                padding-left: 25px;
+                padding-right: 25px;
+            }
+
+            .hero-intro h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-intro p {
+                font-size: 1.05rem;
+            }
+
+            .hero-images-grid {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+
+            .hero-image-card img {
+                height: 400px;
+            }
+
+            .services-title {
+                font-size: 2.5rem;
+            }
+
+            .section-header h2 {
+                font-size: 2rem;
+            }
+
+            .steps-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cta-section h2 {
+                font-size: 2rem;
+            }
+
+            .contact-info h2 {
+                font-size: 2rem;
+            }
+
+            footer {
+                padding: 30px 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Particles -->
+    <div class="particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav>
+        <a href="#" class="logo">
+            <img src="logo.png" alt="AlignAI Logo" class="logo-image">
+            <span class="logo-text">AlignAI</span>
+        </a>
+        <div class="mobile-menu-toggle" onclick="toggleMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#services">Services</a></li>
+            <li><a href="#how-it-works">How It Works</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section with Images -->
+    <section class="hero-section">
+        <div class="hero-intro">
+            <h1>AlignAI - Transform Your Resume with Intelligence</h1>
+            <p>Professional resume tailoring that matches your skills with job requirements</p>
+        </div>
+        
+        <div class="hero-images-grid">
+            <div class="hero-image-card">
+                <img src="before.png" alt="Before - Original Resume">
+                <div class="image-overlay">
+                    <h3>Before Alignment</h3>
+                    <p>Your original resume</p>
+                </div>
+            </div>
+            
+            <div class="hero-image-card">
+                <img src="after.png" alt="After - Aligned Resume">
+                <div class="image-overlay">
+                    <h3>After Alignment</h3>
+                    <p>AI-optimized and perfectly matched</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services-section" id="services">
+        <div>
+            <h1 class="services-title">What AlignAI Does</h1>
+        </div>
+        <div>
+            <p class="services-description">
+                AlignAI uses advanced artificial intelligence to analyze job descriptions and your resume, creating a perfect match between your skills and employer requirements. Our intelligent system identifies key competencies, optimizes your experience descriptions, and ensures your resume passes Applicant Tracking Systems (ATS) while highlighting your most relevant qualifications for each specific role you're targeting.
+            </p>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="section-header">
+            <h2>How It Works</h2>
+            <p>Simple process to get your perfectly tailored resume</p>
+        </div>
+
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <div class="step-icon"><i class="fas fa-file-upload"></i></div>
+                <h3>Upload Resume</h3>
+                <p>Paste your current resume and let our AI analyze your skills</p>
+            </div>
+
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <div class="step-icon"><i class="fas fa-briefcase"></i></div>
+                <h3>Add Job Description</h3>
+                <p>Copy the job posting you're interested in applying to</p>
+            </div>
+
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <div class="step-icon"><i class="fas fa-brain"></i></div>
+                <h3>AI Matching</h3>
+                <p>Our intelligent system matches your skills with requirements</p>
+            </div>
+
+            <div class="step-card">
+                <div class="step-number">4</div>
+                <div class="step-icon"><i class="fas fa-download"></i></div>
+                <h3>Get Resume</h3>
+                <p>Download your optimized resume perfectly aligned</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section">
+        <div class="section-header">
+            <h2>Why Choose AlignAI</h2>
+            <p>Intelligent features designed specifically for resume alignment</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <div class="feature-content">
+                    <h3>Smart Skill Matching</h3>
+                    <p>Our AI identifies overlapping skills between your resume and job requirements, highlighting your strongest matches and suggesting improvements for better alignment.</p>
+                </div>
+            </div>
+
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-bullseye"></i>
+                </div>
+                <div class="feature-content">
+                    <h3>Keyword Optimization</h3>
+                    <p>Automatically extract and integrate critical keywords from job descriptions into your resume, ensuring you rank higher in ATS screening systems.</p>
+                </div>
+            </div>
+
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-magic"></i>
+                </div>
+                <div class="feature-content">
+                    <h3>Tailored Content Generation</h3>
+                    <p>Generate customized resume sections that emphasize your most relevant experience for each specific job, using professional language that resonates with recruiters.</p>
+                </div>
+            </div>
+
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-percent"></i>
+                </div>
+                <div class="feature-content">
+                    <h3>Match Score Analysis</h3>
+                    <p>Receive a detailed compatibility score showing how well your resume aligns with the job requirements, plus actionable recommendations for improvement.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <h2>Ready to Align Your Resume with Your Dream Job?</h2>
+        <p>Transform your resume in minutes with AI-powered alignment technology</p>
+        <a href="login.html" class="cta-button">Start Aligning Now →</a>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact-section" id="contact">
+        <div class="contact-grid">
+            <div class="contact-info">
+                <h2>Contact AlignAI</h2>
+                <div class="contact-details">
+                    <div class="contact-item">
+                        <i class="fas fa-user"></i>
+                        <span>Mounika Bolla</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>monicabolla2000@gmail.com</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <span>+1 (913) 238-8079</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Gainesville, FL</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fab fa-linkedin"></i>
+                        <span>linkedin.com/in/mounika-bolla</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fab fa-github"></i>
+                        <span>github.com/mounika-bolla</span>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <p class="services-description">
+                    Have questions about AlignAI's resume alignment technology? Need help optimizing your resume for a specific role? We're here to assist you in creating the perfect match between your qualifications and job requirements. Reach out and let us help you land your next opportunity.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 AlignAI. All rights reserved. | Designed with care by <a href="#contact">Mounika Bolla</a></p>
+    </footer>
+
+    <script>
+        function toggleMenu() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('active');
+        }
+
+        // Smooth scroll for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+                // Close mobile menu after click
+                document.getElementById('navLinks').classList.remove('active');
+            });
+        });
+
+        // Intersection Observer for scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'scaleIn 0.8s ease-out forwards';
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        // Observe sections
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('.services-section, .how-it-works, .features-section, .cta-section, .contact-section');
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+
+            // Add stagger animation to feature items
+            const featureItems = document.querySelectorAll('.feature-item');
+            featureItems.forEach((item, index) => {
+                item.style.animation = `slideInLeft 0.6s ease-out ${index * 0.15}s backwards`;
+            });
+
+            // Parallax effect on scroll
+            let lastScrollY = window.scrollY;
+            window.addEventListener('scroll', () => {
+                const scrollY = window.scrollY;
+                const particles = document.querySelector('.particles');
+                if (particles) {
+                    particles.style.transform = `translateY(${scrollY * 0.3}px)`;
+                }
+                lastScrollY = scrollY;
+            });
+        });
+
+        // Add ripple effect on CTA button click
+        document.addEventListener('DOMContentLoaded', () => {
+            const button = document.querySelector('.cta-button');
+            if (button) {
+                button.addEventListener('click', function(e) {
+                    const ripple = document.createElement('span');
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+                    
+                    ripple.style.width = ripple.style.height = size + 'px';
+                    ripple.style.left = x + 'px';
+                    ripple.style.top = y + 'px';
+                    ripple.classList.add('ripple-effect');
+                    
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => ripple.remove(), 600);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

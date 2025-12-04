@@ -1,0 +1,146 @@
+{
+  "name": "CHANAKYA",
+  "contact_info": {
+    "email": "chanakya@email.com",
+    "phone": "(555) 123-4567",
+    "location": "Gainesville, FL",
+    "linkedin": "linkedin.com/in/chanakya",
+    "github": "github.com/chanakya-ml",
+    "portfolio": "https://chanakya-portfolio.com"
+  },
+  "summary": "MS student in AI Systems with 4+ years of machine learning engineering experience. Specialized in building production LLM systems, computer vision applications, and real-time AI pipelines.",
+  "skills": [
+    "Python",
+    "PyTorch",
+    "TensorFlow",
+    "Machine Learning",
+    "Deep Learning",
+    "LLMs",
+    "Transformers",
+    "Computer Vision",
+    "MLOps",
+    "Docker",
+    "Kubernetes",
+    "AWS",
+    "Azure",
+    "SQL",
+    "Git",
+    "REST APIs",
+    "Leadership",
+    "Team Collaboration",
+    "Technical Communication",
+    "Problem Solving",
+    "Mentorship",
+    "Project Management"
+  ],
+  "technical_skills": [
+    "Python",
+    "PyTorch",
+    "TensorFlow",
+    "Machine Learning",
+    "Deep Learning",
+    "LLMs",
+    "Transformers",
+    "Computer Vision",
+    "MLOps",
+    "Docker",
+    "Kubernetes",
+    "AWS",
+    "Azure",
+    "SQL",
+    "Git",
+    "REST APIs"
+  ],
+  "soft_skills": [
+    "Leadership",
+    "Team Collaboration",
+    "Technical Communication",
+    "Problem Solving",
+    "Mentorship",
+    "Project Management"
+  ],
+  "experience": [
+    {
+      "title": "Machine Learning Engineer",
+      "company": "Attacked.ai",
+      "duration": "2023-2024",
+      "responsibilities": [
+        "Built agentic AI pipelines for automated workflows",
+        "Developed LLM-based security detection systems",
+        "Deployed models to production using Docker and AWS",
+        "Implemented monitoring and logging for model performance",
+        "Led team of 3 junior engineers"
+      ]
+    },
+    {
+      "title": "ML Engineer",
+      "company": "h2o.ai",
+      "duration": "2022-2023",
+      "responsibilities": [
+        "Developed LLM security and detection systems",
+        "Fine-tuned transformer models for domain-specific tasks",
+        "Collaborated with research team on novel architectures",
+        "Published technical blog posts on company website"
+      ]
+    },
+    {
+      "title": "Quantitative Developer",
+      "company": "Hedge Vantage",
+      "duration": "2021-2022",
+      "responsibilities": [
+        "Built quantitative trading models using ML techniques",
+        "Developed real-time prediction systems",
+        "Backtesting and optimization of trading strategies",
+        "Worked with large-scale financial datasets"
+      ]
+    },
+    {
+      "title": "Computer Vision Engineer",
+      "company": "ESAB",
+      "duration": "2020-2021",
+      "responsibilities": [
+        "Industrial computer vision applications",
+        "Object detection and classification using YOLOv7",
+        "Real-time inference optimization for edge devices",
+        "Reduced inference time by 40% through optimization"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "degree": "Master of Science in AI Systems",
+      "institution": "University of Florida",
+      "year": "Present",
+      "details": "Focus: Machine Learning, Deep Learning, Computer Vision; Graduate Research Assistant; GPA: 3.9/4.0"
+    },
+    {
+      "degree": "Bachelor of Technology in Computer Science",
+      "institution": null,
+      "year": "2020",
+      "details": "Published IEEE research paper on optimization algorithms; Dean's List all semesters"
+    }
+  ],
+  "projects": [
+    "AI Educator System: Interactive learning platform with LLM integration and real-time voice agents (GitHub: github.com/chanakya-ml/ai-educator)",
+    "Violence Detection System (Violens): Real-time video analysis using computer vision for safety applications",
+    "FINTRA AI: Financial research platform with AI-powered market analysis"
+  ],
+  "achievements": [
+    "Winner, University AI Hackathon 2024",
+    "Best Paper Award, IEEE Conference 2020",
+    "Top 1% contributor on GitHub in AI/ML repositories"
+  ],
+  "certifications": [
+    "AWS Certified Machine Learning - Specialty",
+    "TensorFlow Developer Certificate",
+    "Deep Learning Specialization (Coursera)"
+  ],
+  "extracurricular_activities": [
+    "President, AI/ML Student Club at University of Florida",
+    "Volunteer coding instructor for underrepresented high school students",
+    "Hackathon organizer and mentor (organized 3 events, 200+ participants)",
+    "Active open source contributor (500+ GitHub contributions)",
+    "Technical blog writer on Medium (10K+ followers)",
+    "Speaker at local tech meetups on ML topics"
+  ]
+}

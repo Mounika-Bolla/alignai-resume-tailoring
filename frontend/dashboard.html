@@ -1,0 +1,1868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Playground - AlignAI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ============================================
+           COLOR VARIABLES - Consistent theme colors
+           ============================================ */
+        :root {
+            --color-primary: #E5CDB8;
+            --color-primary-dark: #d4b89e;
+            --color-primary-light: #f5ede5;
+            --color-text-dark: #1a1a1a;
+            --color-text-light: #666;
+            --color-background: #fefdfb;
+            --color-white: #ffffff;
+            --color-success: #10b981;
+            --color-error: #ef4444;
+            --color-ai: #8b7355;
+        }
+
+        /* ============================================
+           RESET & BASE STYLES
+           ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--color-background);
+            color: var(--color-text-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-y: auto; /* Allow page scrolling */
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+
+        /* ============================================
+           NAVIGATION BAR - Top fixed header with left/right layout
+           ============================================ */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            height: 65px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid var(--color-primary);
+            padding: 0 2rem;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-container {
+            max-width: 100%;
+            height: 100%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between; /* Logo LEFT, Menu RIGHT */
+            align-items: center;
+        }
+
+        /* LOGO - Left side */
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: var(--color-text-dark);
+            flex-shrink: 0; /* Don't shrink logo */
+        }
+
+        .logo img {
+            width: 45px;
+            height: 45px;
+            object-fit: contain;
+        }
+
+        .logo-text {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--color-text-dark);
+        }
+
+        /* NAV MENU - Right side (Profile + Logout) */
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-left: auto; /* Push to the right */
+            flex-shrink: 0; /* Don't shrink menu */
+        }
+
+        /* USER INFO - Profile container */
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 1.2rem;
+            background: var(--color-primary-light);
+            border-radius: 50px;
+            border: 2px solid var(--color-primary);
+            transition: all 0.3s ease;
+        }
+
+        .user-info:hover {
+            background: var(--color-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* USER AVATAR - Circle with initials */
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: var(--color-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--color-text-dark);
+            border: 2px solid var(--color-primary-dark);
+            flex-shrink: 0;
+        }
+
+        /* USER NAME - Text next to avatar */
+        .user-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--color-text-dark);
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        /* LOGOUT BUTTON - Final element on right */
+        .logout-btn {
+            padding: 0.5rem 1.2rem;
+            background: var(--color-text-dark);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-shrink: 0;
+        }
+
+        .logout-btn:hover {
+            background: var(--color-primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .logout-btn i {
+            font-size: 0.85rem;
+        }
+
+        /* ============================================
+           MAIN CONTAINER - Dashboard layout structure
+           Uses CSS Grid for sidebar + main workspace
+           ============================================ */
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 280px 1fr; /* Sidebar 280px, rest is workspace */
+            min-height: calc(100vh - 65px); /* Minimum full height minus navbar */
+            margin-top: 65px; /* Offset for fixed navbar */
+            gap: 0;
+            overflow-y: auto; /* Allow scrolling if content is too tall */
+            overflow-x: hidden;
+        }
+
+        /* ============================================
+           LEFT SIDEBAR - Resume Library
+           Scrollable list of saved resumes
+           ============================================ */
+        .sidebar {
+            background: rgba(255, 255, 255, 0.95);
+            border-right: 2px solid var(--color-primary);
+            padding: 1rem;
+            overflow-y: auto; /* Allow scrolling if many resumes */
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.05);
+            height: 100%;
+        }
+
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--color-primary-light);
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.05rem;
+            color: var(--color-text-dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .new-resume-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: var(--color-primary);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--color-text-dark);
+            transition: all 0.3s ease;
+        }
+
+        .new-resume-btn:hover {
+            background: var(--color-primary-dark);
+            transform: scale(1.1);
+        }
+
+        /* Resume items in sidebar */
+        .resume-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .resume-item {
+            padding: 1rem;
+            background: var(--color-primary-light);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .resume-item:hover {
+            background: var(--color-primary);
+            border-color: var(--color-primary-dark);
+            transform: translateX(5px);
+        }
+
+        .resume-item.active {
+            background: var(--color-primary);
+            border-color: var(--color-text-dark);
+        }
+
+        .resume-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+
+        .resume-item-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--color-text-dark);
+            flex: 1;
+        }
+
+        .resume-item-actions {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .resume-item-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.25rem;
+            color: var(--color-text-light);
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+
+        .resume-item-btn:hover {
+            color: var(--color-text-dark);
+            transform: scale(1.2);
+        }
+
+        .resume-item-date {
+            font-size: 0.75rem;
+            color: var(--color-text-light);
+        }
+
+        /* Empty state for resume library */
+        .empty-state {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: var(--color-text-light);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--color-primary);
+            margin-bottom: 1rem;
+        }
+
+        .empty-state p {
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        /* ============================================
+           MAIN WORKSPACE - Right side content area
+           Grid layout: Top row (2 columns), Bottom row (full width)
+           ============================================ */
+        .workspace {
+            display: grid;
+            grid-template-rows: 300px minmax(500px, 1fr); /* Top section fixed, Chat flexible */
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--color-background);
+            overflow-y: auto; /* Allow workspace scrolling */
+            overflow-x: hidden;
+            min-height: calc(100vh - 65px);
+        }
+
+        /* Top section: Resume upload + Job description side by side */
+        .top-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* 50-50 split */
+            gap: 1rem;
+            height: 100%;
+            min-height: 0; /* Allow grid items to shrink */
+        }
+
+        /* ============================================
+           UPLOAD SECTION - Resume file upload area
+           Drag and drop functionality
+           ============================================ */
+        .upload-section {
+            background: rgba(255, 255, 255, 0.95);
+            border: 3px dashed var(--color-primary);
+            border-radius: 16px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+            height: 100%;
+            min-height: 0;
+            overflow-y: auto;
+        }
+
+        .upload-section:hover {
+            border-color: var(--color-primary-dark);
+            background: var(--color-white);
+        }
+
+        .upload-section.drag-over {
+            border-color: var(--color-success);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .upload-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .upload-header h3 {
+            font-size: 1rem;
+            color: var(--color-text-dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .clear-btn {
+            background: none;
+            border: none;
+            color: var(--color-error);
+            cursor: pointer;
+            font-size: 0.85rem;
+            padding: 0.25rem 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .clear-btn:hover {
+            text-decoration: underline;
+        }
+
+        .upload-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            cursor: pointer;
+            padding: 1rem;
+            min-height: 0;
+            overflow-y: auto;
+        }
+
+        .upload-icon {
+            font-size: 2.5rem;
+            color: var(--color-primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .upload-text {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--color-text-dark);
+            margin-bottom: 0.4rem;
+        }
+
+        .upload-hint {
+            font-size: 0.75rem;
+            color: var(--color-text-light);
+        }
+
+        #resumeFileInput {
+            display: none;
+        }
+
+        /* File preview after upload */
+        .file-preview {
+            display: none;
+            flex-direction: column;
+            gap: 0.75rem;
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
+        }
+
+        .file-preview.active {
+            display: flex;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: var(--color-primary-light);
+            border-radius: 10px;
+        }
+
+        .file-icon {
+            font-size: 2rem;
+            color: var(--color-primary-dark);
+        }
+
+        .file-details {
+            flex: 1;
+        }
+
+        .file-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--color-text-dark);
+        }
+
+        .file-size {
+            font-size: 0.8rem;
+            color: var(--color-text-light);
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 0.6rem 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn-primary {
+            background: var(--color-primary);
+            color: var(--color-text-dark);
+        }
+
+        .action-btn-primary:hover {
+            background: var(--color-primary-dark);
+        }
+
+        .action-btn-secondary {
+            background: var(--color-text-dark);
+            color: white;
+        }
+
+        .action-btn-secondary:hover {
+            background: var(--color-primary-dark);
+        }
+
+        /* ============================================
+           JOB DESCRIPTION SECTION - Text input area
+           ============================================ */
+        .jd-section {
+            background: rgba(255, 255, 255, 0.95);
+            border: 3px solid var(--color-primary);
+            border-radius: 16px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            min-height: 0;
+            overflow-y: auto;
+        }
+
+        .jd-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .jd-header h3 {
+            font-size: 1rem;
+            color: var(--color-text-dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .char-count {
+            font-size: 0.8rem;
+            color: var(--color-text-light);
+        }
+
+        #jobDescriptionText {
+            flex: 1;
+            width: 100%;
+            border: 2px solid var(--color-primary-light);
+            border-radius: 10px;
+            padding: 1rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            resize: none;
+            outline: none;
+            transition: all 0.3s ease;
+            overflow-y: auto;
+            min-height: 0;
+        }
+
+        #jobDescriptionText:focus {
+            border-color: var(--color-primary);
+        }
+
+        #jobDescriptionText::placeholder {
+            color: var(--color-text-light);
+        }
+
+        /* Scrollbar for textarea */
+        #jobDescriptionText::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #jobDescriptionText::-webkit-scrollbar-track {
+            background: var(--color-primary-light);
+            border-radius: 10px;
+        }
+
+        #jobDescriptionText::-webkit-scrollbar-thumb {
+            background: var(--color-primary);
+            border-radius: 10px;
+        }
+
+        #jobDescriptionText::-webkit-scrollbar-thumb:hover {
+            background: var(--color-primary-dark);
+        }
+
+        /* ============================================
+           CHAT SECTION - AI Assistant Interface
+           ChatGPT-style message layout
+           ============================================ */
+        .chat-section {
+            background: rgba(255, 255, 255, 0.95);
+            border: 3px solid var(--color-primary);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            height: 100%;
+            min-height: 0;
+        }
+
+        .chat-header {
+            padding: 0.75rem 1rem;
+            border-bottom: 2px solid var(--color-primary-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .chat-header h3 {
+            font-size: 1rem;
+            color: var(--color-text-dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .quick-action-btn {
+            padding: 0.4rem 0.8rem;
+            background: var(--color-primary-light);
+            border: 1px solid var(--color-primary);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--color-text-dark);
+            transition: all 0.2s ease;
+        }
+
+        .quick-action-btn:hover {
+            background: var(--color-primary);
+        }
+
+        /* Chat messages area - scrollable */
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            min-height: 0;
+        }
+
+        /* Individual message bubble */
+        .message {
+            display: flex;
+            gap: 1rem;
+            animation: messageSlideIn 0.3s ease-out;
+        }
+
+        @keyframes messageSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user-message {
+            flex-direction: row-reverse; /* User messages on right */
+        }
+
+        .message-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .message.ai-message .message-avatar {
+            background: var(--color-ai);
+            color: white;
+        }
+
+        .message.user-message .message-avatar {
+            background: var(--color-primary);
+            color: var(--color-text-dark);
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+
+        .message.ai-message .message-content {
+            background: var(--color-primary-light);
+            color: var(--color-text-dark);
+            border-bottom-left-radius: 4px;
+        }
+
+        .message.user-message .message-content {
+            background: var(--color-text-dark);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        /* Typing indicator */
+        .typing-indicator {
+            display: none;
+            gap: 1rem;
+        }
+
+        .typing-indicator.active {
+            display: flex;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 0.4rem;
+            padding: 1rem 1.2rem;
+            background: var(--color-primary-light);
+            border-radius: 16px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--color-text-light);
+            border-radius: 50%;
+            animation: typingDot 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typingDot {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+
+        /* Chat input area - fixed at bottom */
+        .chat-input {
+            padding: 0.75rem 1rem;
+            border-top: 2px solid var(--color-primary-light);
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-end;
+            flex-shrink: 0;
+        }
+
+        #chatInput {
+            flex: 1;
+            border: 2px solid var(--color-primary-light);
+            border-radius: 20px;
+            padding: 0.8rem 1.2rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            resize: none;
+            max-height: 120px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        #chatInput:focus {
+            border-color: var(--color-primary);
+        }
+
+        .send-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--color-text-dark);
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .send-btn:hover:not(:disabled) {
+            background: var(--color-primary-dark);
+            transform: scale(1.1);
+        }
+
+        .send-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* ============================================
+           RESPONSIVE DESIGN - Mobile/tablet adjustments
+           ============================================ */
+        @media (max-width: 1200px) {
+            .dashboard-container {
+                grid-template-columns: 1fr; /* Stack sidebar and workspace */
+            }
+
+            .sidebar {
+                display: none; /* Hide sidebar on smaller screens */
+            }
+
+            .top-section {
+                grid-template-columns: 1fr; /* Stack upload and JD */
+                grid-template-rows: 250px 250px;
+            }
+
+            .workspace {
+                grid-template-rows: auto 1fr;
+            }
+        }
+
+        /* Tablet & Mobile responsive */
+        @media (max-width: 1024px) {
+            .navbar {
+                padding: 0 1.5rem;
+            }
+
+            .nav-container {
+                justify-content: space-between; /* Keep logo left, menu right */
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0 1rem;
+            }
+
+            .logo-text {
+                display: none; /* Hide "AlignAI" text on mobile, keep logo */
+            }
+
+            .nav-menu {
+                gap: 0.75rem; /* Reduce spacing */
+            }
+
+            .user-info {
+                padding: 0.4rem 1rem;
+            }
+
+            .user-name {
+                font-size: 0.85rem; /* Smaller text on mobile */
+                max-width: 100px; /* Limit width */
+                overflow: hidden;
+                text-overflow: ellipsis; /* Show ... if too long */
+            }
+
+            .user-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 0.85rem;
+            }
+
+            .logout-btn {
+                padding: 0.4rem 1rem;
+                font-size: 0.85rem;
+            }
+
+            .quick-actions {
+                display: none; /* Hide quick actions on mobile */
+            }
+
+            .message-content {
+                max-width: 85%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar {
+                padding: 0 0.75rem;
+            }
+
+            .logo img {
+                width: 40px;
+                height: 40px;
+            }
+
+            .nav-menu {
+                gap: 0.5rem;
+            }
+
+            .user-name {
+                display: none; /* Only hide name on very small screens */
+            }
+
+            .user-info {
+                padding: 0.4rem;
+            }
+
+            .user-avatar {
+                width: 30px;
+                height: 30px;
+                font-size: 0.8rem;
+            }
+
+            .logout-btn {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.8rem;
+            }
+
+            .logout-btn span {
+                display: none; /* Hide "Logout" text, keep icon */
+            }
+        }
+
+        /* ============================================
+           SCROLLBAR STYLING - Custom scrollbars for ALL scrollable areas
+           ============================================ */
+        body::-webkit-scrollbar,
+        .dashboard-container::-webkit-scrollbar,
+        .workspace::-webkit-scrollbar,
+        .sidebar::-webkit-scrollbar,
+        .chat-messages::-webkit-scrollbar,
+        .upload-section::-webkit-scrollbar,
+        .upload-area::-webkit-scrollbar,
+        .file-preview::-webkit-scrollbar,
+        .jd-section::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        body::-webkit-scrollbar-track,
+        .dashboard-container::-webkit-scrollbar-track,
+        .workspace::-webkit-scrollbar-track,
+        .sidebar::-webkit-scrollbar-track,
+        .chat-messages::-webkit-scrollbar-track,
+        .upload-section::-webkit-scrollbar-track,
+        .upload-area::-webkit-scrollbar-track,
+        .file-preview::-webkit-scrollbar-track,
+        .jd-section::-webkit-scrollbar-track {
+            background: var(--color-primary-light);
+            border-radius: 10px;
+        }
+
+        body::-webkit-scrollbar-thumb,
+        .dashboard-container::-webkit-scrollbar-thumb,
+        .workspace::-webkit-scrollbar-thumb,
+        .sidebar::-webkit-scrollbar-thumb,
+        .chat-messages::-webkit-scrollbar-thumb,
+        .upload-section::-webkit-scrollbar-thumb,
+        .upload-area::-webkit-scrollbar-thumb,
+        .file-preview::-webkit-scrollbar-thumb,
+        .jd-section::-webkit-scrollbar-thumb {
+            background: var(--color-primary);
+            border-radius: 10px;
+        }
+
+        body::-webkit-scrollbar-thumb:hover,
+        .dashboard-container::-webkit-scrollbar-thumb:hover,
+        .workspace::-webkit-scrollbar-thumb:hover,
+        .sidebar::-webkit-scrollbar-thumb:hover,
+        .chat-messages::-webkit-scrollbar-thumb:hover,
+        .upload-section::-webkit-scrollbar-thumb:hover,
+        .upload-area::-webkit-scrollbar-thumb:hover,
+        .file-preview::-webkit-scrollbar-thumb:hover,
+        .jd-section::-webkit-scrollbar-thumb:hover {
+            background: var(--color-primary-dark);
+        }
+
+        /* Smooth scrolling for ALL scrollable areas including page */
+        html,
+        body,
+        .dashboard-container,
+        .workspace,
+        .sidebar,
+        .chat-messages,
+        .upload-section,
+        .upload-area,
+        .file-preview,
+        .jd-section,
+        #jobDescriptionText {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body>
+    <!-- ============================================
+         NAVIGATION BAR - Top header with logo and user info
+         ============================================ -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <img src="logo.png" alt="AlignAI Logo">
+                <span class="logo-text">AlignAI</span>
+            </a>
+            <div class="nav-menu">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">?</div>
+                    <span class="user-name" id="userName">Loading...</span>
+                </div>
+                <button class="logout-btn" onclick="clearSessionAndReload()" style="background: #ef4444; margin-right: 0.5rem;">
+                    <i class="fas fa-trash"></i>
+                    <span>Clear Session</span>
+                </button>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ============================================
+         MAIN DASHBOARD CONTAINER
+         Grid Layout: [Sidebar] | [Workspace]
+         ============================================ -->
+    <div class="dashboard-container">
+        <!-- ============================================
+             LEFT SIDEBAR - Resume Library
+             Shows all saved resumes for quick access
+             ============================================ -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>
+                    <i class="fas fa-bookmark"></i>
+                    My Resumes
+                </h2>
+                <button class="new-resume-btn" onclick="createNewResume()" title="New Resume">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+
+            <!-- Resume list container -->
+            <div class="resume-list" id="resumeList">
+                <!-- Empty state - shown when no resumes saved -->
+                <div class="empty-state">
+                    <i class="fas fa-folder-open"></i>
+                    <p>No saved resumes yet</p>
+                    <p style="font-size: 0.8rem;">Upload a resume to get started!</p>
+                </div>
+
+                <!-- Dynamic resume items will be added here via JavaScript
+                Example structure:
+                <div class="resume-item active" onclick="loadResume(1)">
+                    <div class="resume-item-header">
+                        <span class="resume-item-name">Tech Resume 2024</span>
+                        <div class="resume-item-actions">
+                            <button class="resume-item-btn" onclick="renameResume(1, event)">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="resume-item-btn" onclick="deleteResume(1, event)">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="resume-item-date">Updated: Jan 15, 2024</div>
+                </div>
+                -->
+            </div>
+        </aside>
+
+        <!-- ============================================
+             MAIN WORKSPACE - Upload, JD, and Chat
+             ============================================ -->
+        <main class="workspace">
+            <!-- ============================================
+                 TOP SECTION - Split into 2 columns
+                 Left: Resume Upload | Right: Job Description
+                 ============================================ -->
+            <div class="top-section">
+                <!-- ============================================
+                     RESUME UPLOAD SECTION
+                     Drag & drop area for PDF/DOCX files
+                     ============================================ -->
+                <div class="upload-section" id="uploadSection">
+                    <div class="upload-header">
+                        <h3>
+                            <i class="fas fa-file-upload"></i>
+                            Resume
+                        </h3>
+                        <button class="clear-btn" id="clearResumeBtn" style="display: none;" onclick="clearResume()">
+                            <i class="fas fa-times"></i> Clear
+                        </button>
+                    </div>
+
+                    <!-- Upload area - shown initially -->
+                    <div class="upload-area" id="uploadArea" onclick="document.getElementById('resumeFileInput').click()">
+                        <div class="upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <p class="upload-text">Drag & drop your resume here</p>
+                        <p class="upload-hint">or click to browse • PDF or DOCX • Max 10MB</p>
+                    </div>
+                    <input type="file" id="resumeFileInput" accept=".pdf,.docx" onchange="handleFileUpload(event)">
+
+                    <!-- File preview - shown after upload -->
+                    <div class="file-preview" id="filePreview">
+                        <div class="file-info">
+                            <div class="file-icon">
+                                <i class="fas fa-file-pdf"></i>
+                            </div>
+                            <div class="file-details">
+                                <div class="file-name" id="fileName">Resume.pdf</div>
+                                <div class="file-size" id="fileSize">2.5 MB</div>
+                            </div>
+                        </div>
+                        <div class="file-actions">
+                            <button class="action-btn action-btn-primary" onclick="saveToLibrary()">
+                                <i class="fas fa-save"></i> Save to Library
+                            </button>
+                            <button class="action-btn action-btn-secondary" onclick="changeFile()">
+                                <i class="fas fa-exchange-alt"></i> Change File
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============================================
+                     JOB DESCRIPTION SECTION
+                     Text area for pasting job posting
+                     ============================================ -->
+                <div class="jd-section">
+                    <div class="jd-header">
+                        <h3>
+                            <i class="fas fa-briefcase"></i>
+                            Job Description
+                        </h3>
+                        <span class="char-count" id="charCount">0 characters</span>
+                    </div>
+                    <textarea 
+                        id="jobDescriptionText" 
+                        placeholder="Paste the job description here...
+
+Example:
+• Job Title
+• Company Name
+• Responsibilities
+• Required Skills
+• Qualifications" 
+                        oninput="updateCharCount()"></textarea>
+                </div>
+            </div>
+
+            <!-- ============================================
+                 CHAT SECTION - AI Assistant Interface
+                 Full width below top section
+                 ============================================ -->
+            <div class="chat-section">
+                <div class="chat-header">
+                    <h3>
+                        <i class="fas fa-robot"></i>
+                        AI Assistant
+                    </h3>
+                    <!-- Quick action buttons -->
+                    <div class="quick-actions">
+                        <button class="quick-action-btn" onclick="analyzeSkills()">
+                            <i class="fas fa-chart-bar"></i> Analyze
+                        </button>
+                        <button class="quick-action-btn" onclick="createStrategy()">
+                            <i class="fas fa-lightbulb"></i> Strategy
+                        </button>
+                        <button class="quick-action-btn" onclick="generateResume()">
+                            <i class="fas fa-magic"></i> Generate
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Chat messages area - scrollable -->
+                <div class="chat-messages" id="chatMessages">
+                    <!-- Welcome message -->
+                    <div class="message ai-message">
+                        <div class="message-avatar">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="message-content">
+                            <p>👋 Hello! I'm your AI resume alignment assistant.</p>
+                            <p style="margin-top: 0.5rem;">Upload your resume and paste a job description to get started. I can help you:</p>
+                            <ul style="margin-top: 0.5rem; padding-left: 1.2rem;">
+                                <li>Analyze skill matches</li>
+                                <li>Create tailoring strategies</li>
+                                <li>Generate optimized resumes</li>
+                                <li>Identify missing keywords</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Typing indicator - hidden by default -->
+                    <div class="message typing-indicator" id="typingIndicator">
+                        <div class="message-avatar">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="typing-dots">
+                            <span class="typing-dot"></span>
+                            <span class="typing-dot"></span>
+                            <span class="typing-dot"></span>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic messages will be added here via JavaScript -->
+                </div>
+
+                <!-- Chat input area - fixed at bottom -->
+                <div class="chat-input">
+                    <textarea 
+                        id="chatInput" 
+                        placeholder="Ask me anything about your resume alignment..." 
+                        rows="1"
+                        onkeypress="handleChatKeyPress(event)"></textarea>
+                    <button class="send-btn" id="sendBtn" onclick="sendMessage()" disabled>
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // ============================================
+        // CONFIGURATION & STATE MANAGEMENT
+        // ============================================
+        const API_URL = 'http://localhost:5000/api';  // Single unified backend server
+        
+        // Application state - stores current session data
+        let currentUser = null;
+        let currentResume = null;  // Uploaded resume data
+        let currentResumeFile = null; // File object
+        let savedResumes = [];  // List of user's saved resumes
+        let chatHistory = [];  // Chat message history
+        let currentSessionId = null;  // Current chat session ID
+
+        // ============================================
+        // AUTHENTICATION - Check user session
+        // ============================================
+        async function checkAuth() {
+            try {
+                const response = await fetch(`${API_URL}/auth/check-session`, {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (!response.ok) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                const data = await response.json();
+                
+                if (data.authenticated && data.user) {
+                    currentUser = data.user;
+                    displayUserInfo(data.user);
+                    loadSavedResumes(); // Load user's resume library
+                } else {
+                    window.location.href = 'login.html';
+                }
+            } catch (error) {
+                console.error('Auth check error:', error);
+                alert('Backend server is not running. Please start both auth.py and api.py');
+            }
+        }
+
+        function displayUserInfo(user) {
+            const userName = document.getElementById('userName');
+            userName.textContent = user.full_name;
+
+            const userAvatar = document.getElementById('userAvatar');
+            const initials = user.full_name.split(' ').map(n => n[0]).join('').toUpperCase();
+            userAvatar.textContent = initials;
+        }
+
+        async function logout() {
+            try {
+                await fetch(`${API_URL}/auth/logout`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+            window.location.href = 'index.html';
+        }
+
+        function clearSessionAndReload() {
+            // Clear all cookies for this domain
+            document.cookie.split(";").forEach(function(c) { 
+                document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+            });
+            
+            // Clear local storage
+            localStorage.clear();
+            
+            // Clear session storage
+            sessionStorage.clear();
+            
+            alert('✅ Session cleared! You will be redirected to login.');
+            
+            // Redirect to login
+            window.location.href = 'login.html';
+        }
+
+        // ============================================
+        // FILE UPLOAD - Resume drag & drop handling
+        // ============================================
+        const uploadSection = document.getElementById('uploadSection');
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('resumeFileInput');
+
+        // Prevent default drag behaviors
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, preventDefaults, false);
+            document.body.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        // Highlight drop area when dragging over
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, () => {
+                uploadSection.classList.add('drag-over');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, () => {
+                uploadSection.classList.remove('drag-over');
+            }, false);
+        });
+
+        // Handle dropped files
+        uploadArea.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        }, false);
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        }
+
+        function handleFile(file) {
+            // Validate file type
+            const validTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+            if (!validTypes.includes(file.type)) {
+                alert('Please upload a PDF or DOCX file.');
+                return;
+            }
+
+            // Validate file size (10MB max)
+            if (file.size > 10 * 1024 * 1024) {
+                alert('File size must be less than 10MB.');
+                return;
+            }
+
+            currentResumeFile = file;
+
+            // Show file preview
+            document.getElementById('uploadArea').style.display = 'none';
+            document.getElementById('filePreview').classList.add('active');
+            document.getElementById('clearResumeBtn').style.display = 'block';
+
+            // Update file info
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('fileSize').textContent = formatFileSize(file.size);
+
+            // Update file icon based on type
+            const fileIcon = document.querySelector('.file-icon i');
+            if (file.type === 'application/pdf') {
+                fileIcon.className = 'fas fa-file-pdf';
+            } else {
+                fileIcon.className = 'fas fa-file-word';
+            }
+
+            // Extract text from file (we'll implement this when connecting to backend)
+            extractResumeText(file);
+
+            // Add message to chat
+            addMessage('user', `Uploaded resume: ${file.name}`);
+            addMessage('ai', 'Great! I\'ve received your resume. Now paste the job description and I can help you align your resume to match it perfectly.');
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+
+        function clearResume() {
+            currentResumeFile = null;
+            currentResume = null;
+            document.getElementById('uploadArea').style.display = 'flex';
+            document.getElementById('filePreview').classList.remove('active');
+            document.getElementById('clearResumeBtn').style.display = 'none';
+            fileInput.value = '';
+        }
+
+        function changeFile() {
+            fileInput.click();
+        }
+
+        async function extractResumeText(file) {
+            // Upload file to backend for parsing
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            try {
+                showTypingIndicator();
+                const response = await fetch(`${API_URL}/resume/upload`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                hideTypingIndicator();
+                
+                if (data.success) {
+                    // Store parsed resume data
+                    currentResume = {
+                        fileName: data.filename,
+                        fileSize: data.file_size,
+                        fileType: data.file_type,
+                        text: data.text,
+                        file: file
+                    };
+                    
+                    addMessage('ai', `✅ Resume parsed successfully! Extracted ${data.text_length} characters. You can now paste the job description to start the alignment process.`);
+                } else {
+                    addMessage('ai', `❌ Error parsing resume: ${data.error}`);
+                    clearResume();
+                }
+            } catch (error) {
+                hideTypingIndicator();
+                addMessage('ai', `❌ Error uploading file: ${error.message}. Make sure the API server (api.py) is running on port 5001.`);
+                console.error('Upload error:', error);
+            }
+        }
+
+        // ============================================
+        // JOB DESCRIPTION - Text area handling
+        // ============================================
+        function updateCharCount() {
+            const textarea = document.getElementById('jobDescriptionText');
+            const charCount = document.getElementById('charCount');
+            charCount.textContent = `${textarea.value.length} characters`;
+
+            // Enable send button if both resume and JD are present
+            updateSendButton();
+        }
+
+        function updateSendButton() {
+            const chatInput = document.getElementById('chatInput');
+            const sendBtn = document.getElementById('sendBtn');
+            sendBtn.disabled = chatInput.value.trim() === '';
+        }
+
+        // ============================================
+        // CHAT INTERFACE - Message handling
+        // ============================================
+        function addMessage(type, content) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}-message`;
+
+            const avatarDiv = document.createElement('div');
+            avatarDiv.className = 'message-avatar';
+            if (type === 'ai') {
+                avatarDiv.innerHTML = '<i class="fas fa-robot"></i>';
+            } else {
+                const initials = currentUser ? currentUser.full_name.split(' ').map(n => n[0]).join('').toUpperCase() : 'U';
+                avatarDiv.textContent = initials;
+            }
+
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.innerHTML = content;
+
+            messageDiv.appendChild(avatarDiv);
+            messageDiv.appendChild(contentDiv);
+            messagesContainer.appendChild(messageDiv);
+
+            // Scroll to bottom
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            // Store in history
+            chatHistory.push({ type, content, timestamp: new Date() });
+        }
+
+        function showTypingIndicator() {
+            document.getElementById('typingIndicator').classList.add('active');
+            const messagesContainer = document.getElementById('chatMessages');
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function hideTypingIndicator() {
+            document.getElementById('typingIndicator').classList.remove('active');
+        }
+
+        function handleChatKeyPress(event) {
+            // Send on Enter (without Shift)
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+
+            // Update send button state
+            updateSendButton();
+        }
+
+        async function sendMessage() {
+            const chatInput = document.getElementById('chatInput');
+            const message = chatInput.value.trim();
+
+            if (!message) return;
+
+            // Add user message to chat
+            addMessage('user', message);
+            chatInput.value = '';
+            updateSendButton();
+
+            // Show typing indicator
+            showTypingIndicator();
+
+            // Send message to backend AI
+            try {
+                const jobDescription = document.getElementById('jobDescriptionText').value.trim();
+                const resumeText = currentResume ? currentResume.text : '';
+                
+                const response = await fetch(`${API_URL}/chat/message`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        resume_text: resumeText,
+                        job_description: jobDescription,
+                        session_id: currentSessionId
+                    })
+                });
+                
+                const data = await response.json();
+                hideTypingIndicator();
+                
+                if (data.success) {
+                    // Update session ID
+                    currentSessionId = data.session_id;
+                    
+                    // Add AI response
+                    addMessage('ai', data.message);
+                } else {
+                    addMessage('ai', `❌ Error: ${data.error}`);
+                }
+            } catch (error) {
+                hideTypingIndicator();
+                // Fallback to simulated response if backend is not available
+                console.error('Chat error:', error);
+                let response = generateAIResponse(message);
+                addMessage('ai', `⚠️ Backend API not available. ${response}`);
+            }
+        }
+
+        function generateAIResponse(userMessage) {
+            const msg = userMessage.toLowerCase();
+
+            // Check if resume and JD are uploaded
+            const hasResume = currentResume !== null;
+            const hasJD = document.getElementById('jobDescriptionText').value.trim() !== '';
+
+            if (!hasResume && !hasJD) {
+                return "I need both your resume and the job description to help you. Please upload your resume and paste the job description first.";
+            } else if (!hasResume) {
+                return "Please upload your resume so I can analyze it against the job description.";
+            } else if (!hasJD) {
+                return "Please paste the job description in the right panel so I can help align your resume to it.";
+            }
+
+            // Context-aware responses
+            if (msg.includes('analyze') || msg.includes('skills') || msg.includes('match')) {
+                return "I'll analyze the skill match between your resume and the job description. Looking for key requirements, technical skills, and experience alignment...<br><br><em>Note: Full AI analysis will be available when the backend is connected.</em>";
+            } else if (msg.includes('strategy') || msg.includes('improve') || msg.includes('tailor')) {
+                return "I'll create a tailoring strategy for your resume. This will include:<br>• Skills to emphasize<br>• Keywords to add<br>• Experience to highlight<br>• Sections to restructure<br><br><em>Note: Full strategy generation will be available when the backend is connected.</em>";
+            } else if (msg.includes('generate') || msg.includes('create') || msg.includes('write')) {
+                return "I can generate a tailored resume that perfectly matches the job description. The new resume will highlight your relevant experience and use keywords from the job posting.<br><br><em>Note: Full resume generation will be available when the backend is connected.</em>";
+            } else if (msg.includes('missing') || msg.includes('gap') || msg.includes('need')) {
+                return "I'll identify any skills or qualifications mentioned in the job description that aren't clearly shown in your current resume.<br><br><em>Note: Full gap analysis will be available when the backend is connected.</em>";
+            } else {
+                return "I can help you with:<br>• <strong>Analyzing</strong> skill matches<br>• Creating <strong>tailoring strategies</strong><br>• <strong>Generating</strong> optimized resumes<br>• Identifying <strong>missing skills</strong><br><br>What would you like me to do?";
+            }
+        }
+
+        // ============================================
+        // QUICK ACTIONS - One-click analysis buttons
+        // ============================================
+        function analyzeSkills() {
+            if (!currentResume || !document.getElementById('jobDescriptionText').value.trim()) {
+                addMessage('ai', 'Please upload your resume and paste the job description first.');
+                return;
+            }
+            addMessage('user', 'Analyze the skill match between my resume and this job description');
+            sendMessage(); // This will trigger the AI response
+        }
+
+        function createStrategy() {
+            if (!currentResume || !document.getElementById('jobDescriptionText').value.trim()) {
+                addMessage('ai', 'Please upload your resume and paste the job description first.');
+                return;
+            }
+            addMessage('user', 'Create a tailoring strategy for my resume');
+            sendMessage();
+        }
+
+        function generateResume() {
+            if (!currentResume || !document.getElementById('jobDescriptionText').value.trim()) {
+                addMessage('ai', 'Please upload your resume and paste the job description first.');
+                return;
+            }
+            addMessage('user', 'Generate a tailored resume for this job');
+            sendMessage();
+        }
+
+        // ============================================
+        // RESUME LIBRARY - Save & manage resumes
+        // ============================================
+        async function loadSavedResumes() {
+            try {
+                const response = await fetch(`${API_URL}/resume/list`, {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.resumes) {
+                    savedResumes = data.resumes;
+                    displaySavedResumes(data.resumes);
+                }
+            } catch (error) {
+                console.error('Error loading resumes:', error);
+                // Show empty state if backend unavailable
+            }
+        }
+
+        function displaySavedResumes(resumes) {
+            const resumeList = document.getElementById('resumeList');
+            
+            if (resumes.length === 0) {
+                // Show empty state
+                resumeList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-folder-open"></i>
+                        <p>No saved resumes yet</p>
+                        <p style="font-size: 0.8rem;">Upload a resume to get started!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Display resume items
+            resumeList.innerHTML = '';
+            resumes.forEach(resume => {
+                const resumeItem = document.createElement('div');
+                resumeItem.className = 'resume-item';
+                resumeItem.onclick = () => loadResume(resume.id);
+                
+                const date = new Date(resume.updated_at).toLocaleDateString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric', 
+                    year: 'numeric' 
+                });
+                
+                resumeItem.innerHTML = `
+                    <div class="resume-item-header">
+                        <span class="resume-item-name">${resume.resume_name}</span>
+                        <div class="resume-item-actions">
+                            <button class="resume-item-btn" onclick="renameResume(${resume.id}, event)" title="Rename">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="resume-item-btn" onclick="deleteResume(${resume.id}, event)" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="resume-item-date">Updated: ${date}</div>
+                `;
+                
+                resumeList.appendChild(resumeItem);
+            });
+        }
+
+        async function saveToLibrary() {
+            if (!currentResume) {
+                alert('No resume uploaded to save.');
+                return;
+            }
+
+            const resumeName = prompt('Enter a name for this resume:', currentResume.fileName.replace(/\.[^/.]+$/, ''));
+            if (!resumeName) return;
+
+            try {
+                const response = await fetch(`${API_URL}/resume/save`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        resume_name: resumeName,
+                        filename: currentResume.fileName,
+                        file_type: currentResume.fileType,
+                        file_size: currentResume.fileSize,
+                        text: currentResume.text
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    addMessage('ai', `✅ Resume "${resumeName}" saved to your library!`);
+                    loadSavedResumes(); // Refresh the list
+                } else {
+                    addMessage('ai', `❌ Error saving resume: ${data.error}`);
+                }
+            } catch (error) {
+                console.error('Save error:', error);
+                addMessage('ai', `❌ Error saving resume. Make sure API server is running.`);
+            }
+        }
+
+        function createNewResume() {
+            clearResume();
+            document.getElementById('jobDescriptionText').value = '';
+            updateCharCount();
+            addMessage('ai', 'Ready to work on a new resume! Upload your resume file to get started.');
+        }
+
+        async function loadResume(resumeId) {
+            try {
+                const response = await fetch(`${API_URL}/resume/${resumeId}`, {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const resume = data.resume;
+                    
+                    // Set current resume
+                    currentResume = {
+                        fileName: resume.original_filename,
+                        fileSize: resume.file_size,
+                        fileType: resume.file_type,
+                        text: resume.text,
+                        id: resume.id
+                    };
+                    
+                    // Update UI
+                    document.getElementById('uploadArea').style.display = 'none';
+                    document.getElementById('filePreview').classList.add('active');
+                    document.getElementById('clearResumeBtn').style.display = 'block';
+                    document.getElementById('fileName').textContent = resume.original_filename;
+                    document.getElementById('fileSize').textContent = formatFileSize(resume.file_size);
+                    
+                    // Update file icon
+                    const fileIcon = document.querySelector('.file-icon i');
+                    fileIcon.className = resume.file_type === 'pdf' ? 'fas fa-file-pdf' : 'fas fa-file-word';
+                    
+                    addMessage('ai', `Loaded "${resume.resume_name}" from your library!`);
+                }
+            } catch (error) {
+                console.error('Load error:', error);
+                addMessage('ai', '❌ Error loading resume.');
+            }
+        }
+
+        async function renameResume(resumeId, event) {
+            event.stopPropagation();
+            const newName = prompt('Enter new name:');
+            if (!newName) return;
+            
+            try {
+                const response = await fetch(`${API_URL}/resume/${resumeId}/rename`, {
+                    method: 'PUT',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ resume_name: newName })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    loadSavedResumes(); // Refresh list
+                    addMessage('ai', `✅ Resume renamed to "${newName}"`);
+                }
+            } catch (error) {
+                console.error('Rename error:', error);
+            }
+        }
+
+        async function deleteResume(resumeId, event) {
+            event.stopPropagation();
+            if (!confirm('Are you sure you want to delete this resume from your library?')) return;
+            
+            try {
+                const response = await fetch(`${API_URL}/resume/${resumeId}`, {
+                    method: 'DELETE',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    loadSavedResumes(); // Refresh list
+                    addMessage('ai', '✅ Resume deleted from library');
+                }
+            } catch (error) {
+                console.error('Delete error:', error);
+            }
+        }
+
+        // ============================================
+        // AUTO-RESIZE TEXTAREA - Chat input
+        // ============================================
+        const chatInput = document.getElementById('chatInput');
+        chatInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+        });
+
+        // ============================================
+        // INITIALIZATION - Load when page ready
+        // ============================================
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            
+            // Focus on chat input
+            setTimeout(() => {
+                chatInput.focus();
+            }, 500);
+        });
+    </script>
+</body>
+</html>
+
+

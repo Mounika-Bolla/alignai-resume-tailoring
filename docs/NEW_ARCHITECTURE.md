@@ -379,3 +379,4 @@ pip install -r requirements.txt
 **Built with ❤️ for better resumes**
 
 
+

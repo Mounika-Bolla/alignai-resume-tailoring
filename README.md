@@ -1,19 +1,37 @@
 # 🎯 AlignAI - AI-Powered Resume Tailoring System
 
-**Intelligent Resume Optimization using RAG (Retrieval-Augmented Generation)**
+**Intelligent Resume Optimization using RAG (Retrieval-Augmented Generation) + 4-Tool Agent Pipeline**
 
-Transform your resume with AI that learns and adapts to your needs. AlignAI uses Google Gemini and advanced RAG technology to create perfectly tailored resumes for any job.
+Transform your resume with AI that learns and adapts to your needs. AlignAI uses Google Gemini, advanced RAG technology, and a 4-tool agent pipeline to create perfectly tailored LaTeX resumes for any job.
+
+![AlignAI Dashboard](frontend/assets/logo.png)
 
 ---
 
 ## ✨ Key Features
 
 🧠 **RAG-Powered Intelligence** - Retrieves relevant context from your resume and generates tailored content  
-🤖 **Google Gemini Integration** - Free, powerful AI for text generation  
-📚 **Vector Database** - FAISS stores and retrieves resume knowledge (Windows-friendly)  
-🔄 **Continuous Learning** - System improves from your feedback  
-💬 **Natural Language Instructions** - "Emphasize Python skills" → AI does it  
-📊 **Smart Suggestions** - AI analyzes gaps and recommends improvements
+🤖 **4-Tool Agent Pipeline** - Job Analyzer → Resume Analyzer → Strategy Creator → Resume Generator  
+📚 **FAISS Vector Database** - Fast semantic search (Windows-friendly, no C++ build required)  
+💾 **Session Persistence** - Chat history and resume saved like ChatGPT  
+📄 **LaTeX Resume Generation** - Download professional `.tex` files for Overleaf  
+💬 **Claude-Style Interface** - Beautiful beige/brown themed chat UI  
+🔄 **Continuous Learning** - System improves from your feedback
+
+---
+
+## 🤖 The 4-Tool Agent Pipeline
+
+AlignAI uses a sophisticated multi-agent system:
+
+| Tool | Agent File | Description |
+|------|------------|-------------|
+| **Tool 1** | `job_analyzer.py` | Analyzes job descriptions, extracts skills, keywords, requirements |
+| **Tool 2** | `resume_analyzer.py` | Parses your resume, extracts skills, experience, education |
+| **Tool 3** | `strategy_creator.py` | Creates matching strategy with score, gaps, action items |
+| **Tool 4** | `resume_generator.py` | Generates tailored LaTeX resume following the strategy |
+
+**Inheritance Chain:** `BaseAgent` → `JobAnalyzerAgent` → `ResumeAgent` → `StrategyAgent` → `ResumeGeneratorAgent`
 
 ---
 
@@ -21,64 +39,61 @@ Transform your resume with AI that learns and adapts to your needs. AlignAI uses
 
 ```
 resumetailoring/
-├── frontend/              # Web interface (HTML/CSS/JS)
-│   ├── index.html        # Landing page
-│   ├── login.html        # Authentication page
-│   ├── dashboard.html    # Main application
-│   ├── test-auth.html    # Debug tool
-│   └── assets/           # Images and static files
-├── backend/               # Flask API server
-│   └── server.py         # Main backend (auth + resume + AI)
-├── agents/                # AI agents and tools
-│   └── resume_generator.py
-├── tests/                 # Test files
-│   ├── main.py           # Agent testing
-│   └── sample_data.py    # Sample data
-├── docs/                  # Documentation
-├── start.py              # Single command to start everything
-└── requirements.txt      # Python dependencies
+├── frontend/                  # Web interface
+│   ├── index.html            # Landing page
+│   ├── login.html            # Authentication
+│   ├── dashboard.html        # Main app (Claude-style UI)
+│   └── assets/               # Images, logo
+├── backend/                   # Flask API server
+│   └── server.py             # All endpoints (auth, resume, RAG, agents)
+├── agents/                    # AI agents (4 tools + RAG)
+│   ├── base_agent.py         # Gemini setup
+│   ├── job_analyzer.py       # Tool 1: Job analysis
+│   ├── resume_analyzer.py    # Tool 2: Resume parsing
+│   ├── strategy_creator.py   # Tool 3: Strategy creation
+│   ├── resume_generator.py   # Tool 4: LaTeX generation
+│   ├── rag_engine.py         # RAG system with FAISS
+│   └── rag_resume_agent.py   # Combines RAG + agents
+├── tests/
+│   ├── templates/            # LaTeX templates
+│   │   └── resume_template.tex
+│   └── sample_data.py
+├── docs/                      # Documentation
+│   ├── RAG_ARCHITECTURE.md
+│   └── PROJECT_STRUCTURE.md
+├── start.py                   # One-command startup
+├── requirements.txt           # Dependencies
+└── .env                       # API keys (create this)
 ```
 
 ---
 
 ## 🚀 Quick Start
 
-### **1. Install Dependencies**
+### **1. Clone & Install**
 
 ```bash
+git clone https://github.com/Mounika-Bolla/alignai-resume-tailoring.git
+cd alignai-resume-tailoring
 pip install -r requirements.txt
 ```
 
 ### **2. Setup PostgreSQL**
 
-Make sure PostgreSQL is installed and running:
-
 ```powershell
-# Check status
+# Check if running
 Get-Service postgresql*
 
-# Start if stopped
+# Start if needed (run as Admin)
 Start-Service postgresql-x64-16
+
+# Create database
+psql -U postgres -c "CREATE DATABASE alignai_db;"
 ```
 
-Create database:
+### **3. Configure `.env` File**
 
-```sql
-psql -U postgres
-CREATE DATABASE alignai_db;
-\q
-```
-
-### **3. Configure Environment**
-
-Create a `.env` file (required for RAG features):
-
-```bash
-# Copy the template
-cp env.template .env
-```
-
-Edit `.env` and add your keys:
+Create a `.env` file in the project root:
 
 ```env
 # Database
@@ -86,243 +101,216 @@ POSTGRES_USER=postgres
 POSTGRES_PASSWORD=postgres
 POSTGRES_DB=alignai_db
 
-# Google Gemini API (Free) - Get at: https://makersuite.google.com/app/apikey
+# Google Gemini API (FREE!)
+# Get your key: https://makersuite.google.com/app/apikey
 GEMINI_API_KEY=your-gemini-api-key-here
 
 # Security
 SECRET_KEY=your-secret-key-here
 ```
 
-**🆓 Get Free Gemini API Key:**
-1. Visit https://makersuite.google.com/app/apikey
-2. Sign in with Google
-3. Click "Get API Key"
-4. Copy and paste into `.env`
-
 ### **4. Run the Application**
-
-**Option A: One Command (Recommended)**
 
 ```bash
 python start.py
 ```
 
-**Option B: Manual (Two Terminals)**
+### **5. Open in Browser**
 
-Terminal 1 - Backend:
-```bash
-python backend/server.py
-```
-
-Terminal 2 - Frontend:
-```bash
-python -m http.server 8000 --directory frontend
-```
-
-### **5. Access the Application**
-
-Open your browser:
-- 🏠 Homepage: `http://localhost:8000/index.html`
-- 🔐 Login: `http://localhost:8000/login.html`
-- 📊 Dashboard: `http://localhost:8000/dashboard.html`
+| Page | URL |
+|------|-----|
+| 🏠 Homepage | http://localhost:8000/index.html |
+| 🔐 Login | http://localhost:8000/login.html |
+| 📊 Dashboard | http://localhost:8000/dashboard.html |
 
 ---
 
-## 🎯 Features
+## 🎮 How to Use
 
-### 🧠 **RAG (Retrieval-Augmented Generation)**
-- **Semantic Search**: Finds relevant resume sections instantly
-- **Context-Aware Generation**: Creates content based on your actual experience
-- **Vector Database**: ChromaDB stores resume knowledge permanently
-- **Continuous Learning**: Improves from your feedback
-- **Natural Language**: Give instructions like "emphasize Python skills"
+### **Basic Flow:**
 
-### ✅ **User Authentication**
-- Email/password registration and login
-- Secure session management
-- Password hashing with Werkzeug
+1. **Upload Resume** - Click "Upload" → Select PDF/DOCX → Paste job description
+2. **Analyze with RAG** - Creates vector database, shows AI suggestions
+3. **Use Agent Tools** - Click individual tools or run full pipeline
+4. **Generate Resume** - Get tailored LaTeX file → Download → Open in Overleaf
 
-### ✅ **Resume Upload & Parsing**
-- Support for PDF and DOCX files
-- Automatic text extraction
-- File validation and security
+### **Available Actions:**
 
-### ✅ **Resume Library**
-- Save multiple resumes
-- Rename, delete, and manage resumes
-- Quick access to saved resumes
+```
+💡 Quick Actions:
+[Emphasize my technical skills] [Add quantifiable metrics] [Make it ATS-friendly]
 
-### ✅ **AI-Powered Features**
-- **Smart Suggestions**: AI analyzes gaps between resume and JD
-- **Interactive Tailoring**: Natural language instructions
-- **Feedback Loop**: System learns your preferences
-- **Multiple Formats**: LaTeX, PDF, DOCX output
+🤖 Agent Tools:
+[📋 Analyze Job]      - Tool 1: Extract requirements, keywords
+[📄 Analyze Resume]   - Tool 2: Parse skills, experience
+[🧠 Create Strategy]  - Tool 3: Match score, gaps, action plan
+[✨ Generate Resume]  - Tool 4: Create LaTeX file
 
-### ✅ **Modern UI**
-- Responsive design
-- Smooth animations
-- Professional beige/brown theme
-- Drag-and-drop file upload
+🚀 Full Pipeline:
+[🔥 Run All 4 Tools & Generate LaTeX]
+```
 
----
+### **Natural Language Commands:**
 
-## 🗄️ Database Schema
-
-### **users** Table
-- `id` - Primary key
-- `full_name` - User's full name
-- `email` - Unique email (login)
-- `password_hash` - Hashed password
-- `created_at` - Registration date
-- `last_login` - Last login timestamp
-
-### **saved_resumes** Table
-- `id` - Primary key
-- `user_id` - Foreign key to users
-- `name` - Resume name
-- `content` - Extracted text
-- `file_type` - pdf/docx
-- `created_at`, `updated_at` - Timestamps
-
-### **chat_sessions** Table
-- `id` - Primary key
-- `user_id` - Foreign key to users
-- `created_at` - Session start time
-
-### **chat_messages** Table
-- `id` - Primary key
-- `session_id` - Foreign key to chat_sessions
-- `role` - 'user' or 'assistant'
-- `content` - Message text
-- `created_at` - Message timestamp
+Just type in the chat:
+- "Emphasize my Python and machine learning experience"
+- "Add quantifiable metrics to all achievements"
+- "Make my resume ATS-friendly"
+- "Generate tailored resume"
 
 ---
 
 ## 🔧 API Endpoints
 
-### **RAG (Retrieval-Augmented Generation)**
-- `POST /api/rag/analyze` - Analyze resume + JD, create vector database
-- `POST /api/rag/tailor` - Generate tailored content from instruction
-- `POST /api/rag/suggestions` - Get AI improvement suggestions
-- `POST /api/rag/feedback` - Submit feedback for learning
-- `POST /api/rag/chat` - Natural language chat for tailoring
+### **Agent Tools**
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/agent/analyze-job` | Tool 1: Analyze job description |
+| POST | `/api/agent/analyze-resume` | Tool 2: Analyze resume |
+| POST | `/api/agent/create-strategy` | Tool 3: Create matching strategy |
+| POST | `/api/agent/full-pipeline` | Run all 4 tools |
+| POST | `/api/resume/generate-tailored` | Generate LaTeX resume |
+
+### **RAG System**
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/rag/analyze` | Ingest resume + JD into vector store |
+| POST | `/api/rag/tailor` | Generate content from instruction |
+| POST | `/api/rag/suggestions` | Get AI improvement suggestions |
+| POST | `/api/rag/chat` | Natural language chat |
 
 ### **Authentication**
-- `POST /api/auth/signup` - Register new user
-- `POST /api/auth/login` - User login
-- `POST /api/auth/logout` - User logout
-- `GET /api/auth/check-session` - Check if authenticated
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/auth/signup` | Register new user |
+| POST | `/api/auth/login` | User login |
+| POST | `/api/auth/logout` | User logout |
+| GET | `/api/auth/check-session` | Check authentication |
 
 ### **Resume Management**
-- `POST /api/resume/upload` - Upload and parse resume file
-- `POST /api/resume/save` - Save resume to library
-- `GET /api/resume/list` - Get all user's resumes
-- `GET /api/resume/<id>` - Get specific resume
-- `PUT /api/resume/<id>/rename` - Rename resume
-- `DELETE /api/resume/<id>` - Delete resume
-
-### **AI Chat**
-- `POST /api/chat/message` - Send message to AI
-
-### **Utility**
-- `GET /api/health` - Health check
-
-📖 **See [RAG_ARCHITECTURE.md](docs/RAG_ARCHITECTURE.md) for detailed API documentation**
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/resume/upload` | Upload PDF/DOCX |
+| POST | `/api/resume/save` | Save to library |
+| GET | `/api/resume/list` | List all resumes |
+| DELETE | `/api/resume/<id>` | Delete resume |
 
 ---
 
-## 🧪 Testing
+## 💾 Session Persistence
 
-### **Test Authentication**
-1. Go to `http://localhost:8000/test-auth.html`
-2. Click buttons to test each component:
-   - Server status
-   - Cookie verification
-   - Authentication check
+**Like ChatGPT** - Your data persists across browser sessions:
 
-### **Test AI Agents**
-```bash
-cd tests
-python main.py
+- ✅ Resume text saved to localStorage
+- ✅ Job description saved
+- ✅ Chat history preserved
+- ✅ Auto re-ingest on page refresh
+- ✅ Data persists for 7 days
+
+**Clear Options:**
+- "New Chat" - Clears chat, keeps resume
+- "Clear History" (user menu) - Clears everything
+
+---
+
+## 📄 LaTeX Resume Output
+
+Generated resumes use a professional LaTeX template:
+
+```latex
+\documentclass[letterpaper,11pt]{article}
+% ATS-optimized formatting
+% Clean, professional layout
+% Ready for Overleaf
 ```
+
+**To use:**
+1. Click "Generate tailored resume"
+2. Download `.tex` file
+3. Open [Overleaf.com](https://overleaf.com)
+4. Upload file → Compile → Download PDF
 
 ---
 
 ## 🛠️ Troubleshooting
 
-### **Port Already in Use**
+### **"Module not found" errors**
+```bash
+pip install -r requirements.txt
+```
 
+### **PostgreSQL not running**
 ```powershell
-# Find process using port
-netstat -ano | findstr "5000"
+# Run as Administrator
+Start-Service postgresql-x64-16
+```
 
-# Kill process (replace PID)
+### **Port already in use**
+```powershell
+netstat -ano | findstr "5000"
 taskkill /PID [PID] /F
 ```
 
-### **PostgreSQL Connection Error**
+### **GEMINI_API_KEY error**
+1. Get free key: https://makersuite.google.com/app/apikey
+2. Add to `.env` file
+3. Restart servers
 
-```powershell
-# Check if running
-Get-Service postgresql*
-
-# Start service
-Start-Service postgresql-x64-16
-
-# Verify connection
-psql -U postgres -d alignai_db
-```
-
-### **Cannot Upload Files (401 Error)**
-
-1. Clear browser cookies: `http://localhost:8000/clear-session.html`
-2. Logout and login again
-3. Check both servers are running
-4. Use test page to diagnose: `http://localhost:8000/test-auth.html`
-
-### **Module Not Found Errors**
-
-```bash
-# Reinstall dependencies
-pip install -r requirements.txt
-
-# Or install specific package
-pip install pypdf python-docx
-```
+### **Vector store empty after refresh**
+- This is normal - auto re-ingest happens after 1 second
+- Check console for "✅ RAG system ready!"
 
 ---
 
-## 📚 Documentation
+## 📚 Tech Stack
 
-See the `docs/` folder for detailed guides:
-- Database setup
-- Authentication flow
-- Troubleshooting guides
-- API documentation
+| Component | Technology |
+|-----------|------------|
+| **Frontend** | HTML, CSS, JavaScript |
+| **Backend** | Python, Flask |
+| **Database** | PostgreSQL |
+| **AI/LLM** | Google Gemini 2.5 Flash |
+| **Vector Store** | FAISS |
+| **Embeddings** | Google Generative AI |
+| **RAG Framework** | LangChain |
+
+---
+
+## 🗂️ Database Schema
+
+```sql
+-- Users table
+users (id, full_name, email, password_hash, created_at, last_login)
+
+-- Saved resumes
+saved_resumes (id, user_id, name, content, file_type, created_at)
+
+-- Chat history
+chat_sessions (id, user_id, created_at)
+chat_messages (id, session_id, role, content, created_at)
+```
 
 ---
 
 ## 🔐 Security Notes
 
-⚠️ **Development Setup** - Not production-ready!
-
-For production deployment:
-1. Change `SECRET_KEY` to a strong random value
-2. Use environment variables for all secrets
-3. Enable HTTPS and set `SESSION_COOKIE_SECURE=True`
-4. Use a proper WSGI server (Gunicorn, uWSGI)
-5. Set up proper database backups
-6. Implement rate limiting
-7. Add input validation and sanitization
+⚠️ **Development Setup** - For production:
+- Change `SECRET_KEY` to strong random value
+- Use environment variables for secrets
+- Enable HTTPS
+- Use proper WSGI server (Gunicorn)
+- Set up database backups
+- Implement rate limiting
 
 ---
 
 ## 🤝 Contributing
 
-1. Test your changes thoroughly
-2. Update documentation
-3. Follow Python PEP 8 style guide
-4. Keep commits atomic and well-described
+1. Fork the repository
+2. Create feature branch: `git checkout -b feature/amazing-feature`
+3. Commit changes: `git commit -m 'Add amazing feature'`
+4. Push: `git push origin feature/amazing-feature`
+5. Open Pull Request
 
 ---
 
@@ -334,12 +322,13 @@ MIT License - Feel free to use and modify
 
 ## 🆘 Need Help?
 
-1. Check `docs/` folder for guides
-2. Use test tools: `test-auth.html`, `clear-session.html`
-3. Check server logs in terminal windows
-4. Review this README
+1. Check `docs/` folder
+2. Review console logs (F12)
+3. Check server terminal output
+4. Open an issue on GitHub
 
 ---
 
 **Built with ❤️ for better resumes and better jobs**
 
+🔗 **GitHub:** https://github.com/Mounika-Bolla/alignai-resume-tailoring

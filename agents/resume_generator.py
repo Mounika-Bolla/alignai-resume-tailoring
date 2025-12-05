@@ -26,8 +26,10 @@ class ResumeGeneratorAgent(StrategyAgent):
         """Initialize and load LaTeX template"""
         super().__init__()
         
-        # Load LaTeX template from file
-        template_path = os.path.join(os.path.dirname(__file__), 'resume_template.tex')
+        # Load LaTeX template from tests/templates folder
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        template_path = os.path.join(base_dir, 'tests', 'templates', 'resume_template.tex')
+        
         with open(template_path, 'r') as f:
             self.latex_template = f.read()
         

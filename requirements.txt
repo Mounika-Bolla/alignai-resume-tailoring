@@ -21,7 +21,17 @@ python-docx==1.1.0
 python-dotenv==1.0.0
 requests==2.31.0
 
-# AI/LLM (Optional - install if using AI features)
-# openai==1.3.0
-# anthropic==0.7.0
-# langchain==0.1.0
+# AI/LLM - RAG System with Google Gemini
+google-generativeai==0.3.2
+langchain==0.1.6
+langchain-google-genai==0.0.6
+langchain-community==0.0.20
+
+# Vector Database & Embeddings (Windows-friendly)
+faiss-cpu
+sentence-transformers==2.3.1
+tiktoken==0.5.2
+numpy<2.0.0
+
+# Text Processing
+nltk==3.8.1

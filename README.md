@@ -1,6 +1,19 @@
-# 🎯 AlignAI - AI-Powered Resume Alignment System
+# 🎯 AlignAI - AI-Powered Resume Tailoring System
 
-**Align your resume with job descriptions using AI**
+**Intelligent Resume Optimization using RAG (Retrieval-Augmented Generation)**
+
+Transform your resume with AI that learns and adapts to your needs. AlignAI uses Google Gemini and advanced RAG technology to create perfectly tailored resumes for any job.
+
+---
+
+## ✨ Key Features
+
+🧠 **RAG-Powered Intelligence** - Retrieves relevant context from your resume and generates tailored content  
+🤖 **Google Gemini Integration** - Free, powerful AI for text generation  
+📚 **Vector Database** - FAISS stores and retrieves resume knowledge (Windows-friendly)  
+🔄 **Continuous Learning** - System improves from your feedback  
+💬 **Natural Language Instructions** - "Emphasize Python skills" → AI does it  
+📊 **Smart Suggestions** - AI analyzes gaps and recommends improvements
 
 ---
 
@@ -58,14 +71,33 @@ CREATE DATABASE alignai_db;
 
 ### **3. Configure Environment**
 
-Create a `.env` file (optional):
+Create a `.env` file (required for RAG features):
+
+```bash
+# Copy the template
+cp env.template .env
+```
+
+Edit `.env` and add your keys:
 
 ```env
-SECRET_KEY=your-secret-key-here
+# Database
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=postgres
 POSTGRES_DB=alignai_db
+
+# Google Gemini API (Free) - Get at: https://makersuite.google.com/app/apikey
+GEMINI_API_KEY=your-gemini-api-key-here
+
+# Security
+SECRET_KEY=your-secret-key-here
 ```
+
+**🆓 Get Free Gemini API Key:**
+1. Visit https://makersuite.google.com/app/apikey
+2. Sign in with Google
+3. Click "Get API Key"
+4. Copy and paste into `.env`
 
 ### **4. Run the Application**
 
@@ -98,6 +130,13 @@ Open your browser:
 
 ## 🎯 Features
 
+### 🧠 **RAG (Retrieval-Augmented Generation)**
+- **Semantic Search**: Finds relevant resume sections instantly
+- **Context-Aware Generation**: Creates content based on your actual experience
+- **Vector Database**: ChromaDB stores resume knowledge permanently
+- **Continuous Learning**: Improves from your feedback
+- **Natural Language**: Give instructions like "emphasize Python skills"
+
 ### ✅ **User Authentication**
 - Email/password registration and login
 - Secure session management
@@ -113,10 +152,11 @@ Open your browser:
 - Rename, delete, and manage resumes
 - Quick access to saved resumes
 
-### ✅ **AI Chat Interface** (Coming Soon)
-- Interactive AI assistant
-- Resume analysis and suggestions
-- Job description matching
+### ✅ **AI-Powered Features**
+- **Smart Suggestions**: AI analyzes gaps between resume and JD
+- **Interactive Tailoring**: Natural language instructions
+- **Feedback Loop**: System learns your preferences
+- **Multiple Formats**: LaTeX, PDF, DOCX output
 
 ### ✅ **Modern UI**
 - Responsive design
@@ -160,6 +200,13 @@ Open your browser:
 
 ## 🔧 API Endpoints
 
+### **RAG (Retrieval-Augmented Generation)**
+- `POST /api/rag/analyze` - Analyze resume + JD, create vector database
+- `POST /api/rag/tailor` - Generate tailored content from instruction
+- `POST /api/rag/suggestions` - Get AI improvement suggestions
+- `POST /api/rag/feedback` - Submit feedback for learning
+- `POST /api/rag/chat` - Natural language chat for tailoring
+
 ### **Authentication**
 - `POST /api/auth/signup` - Register new user
 - `POST /api/auth/login` - User login
@@ -179,6 +226,8 @@ Open your browser:
 
 ### **Utility**
 - `GET /api/health` - Health check
+
+📖 **See [RAG_ARCHITECTURE.md](docs/RAG_ARCHITECTURE.md) for detailed API documentation**
 
 ---
 

@@ -397,8 +397,10 @@ def upload_resume():
         return jsonify({
             'success': True,
             'filename': filename,
-            'content': content,
-            'length': len(content)
+            'text': content,
+            'text_length': len(content),
+            'file_type': 'pdf' if filename.endswith('.pdf') else 'docx',
+            'file_size': len(content)
         }), 200
         
     except Exception as e:
@@ -576,6 +578,388 @@ def chat_message():
     except Exception as e:
         print(f"❌ Chat error: {e}")
         return jsonify({'success': False, 'error': 'Chat failed'}), 500
+
+
+# ============================================================================
+# RAG API ENDPOINTS
+# ============================================================================
+
+@app.route('/api/rag/analyze', methods=['POST'])
+def rag_analyze():
+    """Analyze resume + JD and ingest into RAG system"""
+    user = get_current_user()
+    # Use user ID if logged in, otherwise use session-based ID for demo
+    user_id = str(user.id) if user else session.get('demo_user_id', 'demo_user')
+    if not user:
+        session['demo_user_id'] = 'demo_user'
+    
+    try:
+        from agents.rag_resume_agent import get_rag_agent
+        
+        data = request.json
+        resume_text = data.get('resume_text', '')
+        job_description = data.get('job_description', '') or 'General professional position requiring strong skills and experience.'
+        
+        if not resume_text:
+            return jsonify({'success': False, 'error': 'Missing resume text. Please upload a resume first.'}), 400
+        
+        rag_agent = get_rag_agent()
+        if not rag_agent:
+            return jsonify({'success': False, 'error': 'RAG system not initialized. Check GEMINI_API_KEY in .env'}), 500
+        
+        result = rag_agent.analyze_and_ingest(
+            resume_text=resume_text,
+            job_description=job_description,
+            user_id=user_id
+        )
+        
+        return jsonify({
+            'success': True,
+            'result': result
+        }), 200
+        
+    except Exception as e:
+        print(f"❌ RAG analysis error: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/rag/tailor', methods=['POST'])
+def rag_tailor():
+    """Tailor resume content based on instruction using RAG"""
+    user = get_current_user()
+    user_id = str(user.id) if user else session.get('demo_user_id', 'demo_user')
+    
+    try:
+        from agents.rag_resume_agent import get_rag_agent
+        
+        data = request.json
+        instruction = data.get('instruction', '')
+        
+        if not instruction:
+            return jsonify({'success': False, 'error': 'Missing instruction'}), 400
+        
+        rag_agent = get_rag_agent()
+        if not rag_agent:
+            return jsonify({'success': False, 'error': 'RAG system not initialized. Check GEMINI_API_KEY'}), 500
+        
+        result = rag_agent.tailor_with_instruction(
+            instruction=instruction,
+            user_id=user_id
+        )
+        
+        return jsonify({
+            'success': True,
+            'result': result
+        }), 200
+        
+    except Exception as e:
+        print(f"❌ RAG tailoring error: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/rag/suggestions', methods=['POST'])
+def rag_suggestions():
+    """Get AI-powered improvement suggestions"""
+    # No auth required for suggestions - works in demo mode
+    
+    try:
+        from agents.rag_resume_agent import get_rag_agent
+        
+        data = request.json
+        resume_text = data.get('resume_text', '')
+        job_description = data.get('job_description', '') or 'Professional role requiring relevant experience and strong skills.'
+        
+        if not resume_text:
+            return jsonify({'success': False, 'error': 'Missing resume text. Please upload a resume first.'}), 400
+        
+        rag_agent = get_rag_agent()
+        if not rag_agent:
+            return jsonify({'success': False, 'error': 'RAG system not initialized. Check GEMINI_API_KEY'}), 500
+        
+        suggestions = rag_agent.get_improvement_suggestions(
+            resume_text=resume_text,
+            job_description=job_description
+        )
+        
+        return jsonify({
+            'success': True,
+            'suggestions': suggestions
+        }), 200
+        
+    except Exception as e:
+        print(f"❌ Suggestions error: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/rag/feedback', methods=['POST'])
+def rag_feedback():
+    """Submit feedback for continuous learning"""
+    user = get_current_user()
+    user_id = str(user.id) if user else session.get('demo_user_id', 'demo_user')
+    
+    try:
+        from agents.rag_resume_agent import get_rag_agent
+        
+        data = request.json
+        instruction = data.get('instruction', '')
+        generated_content = data.get('generated_content', '')
+        feedback = data.get('feedback', '')
+        rating = data.get('rating', 3)
+        
+        if not all([instruction, generated_content, feedback]):
+            return jsonify({'success': False, 'error': 'Missing required fields'}), 400
+        
+        rag_agent = get_rag_agent()
+        if not rag_agent:
+            return jsonify({'success': False, 'error': 'RAG system not initialized'}), 500
+        
+        result = rag_agent.interactive_refinement(
+            user_id=user_id,
+            feedback=feedback,
+            rating=rating,
+            previous_instruction=instruction,
+            previous_content=generated_content
+        )
+        
+        return jsonify({
+            'success': True,
+            'result': result
+        }), 200
+        
+    except Exception as e:
+        print(f"❌ Feedback error: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/rag/chat', methods=['POST'])
+def rag_chat():
+    """RAG-powered chat for resume tailoring"""
+    user = get_current_user()
+    user_id = str(user.id) if user else session.get('demo_user_id', 'demo_user')
+    
+    try:
+        from agents.rag_resume_agent import get_rag_agent
+        
+        data = request.json
+        message = data.get('message', '')
+        
+        if not message:
+            return jsonify({'success': False, 'error': 'Missing message'}), 400
+        
+        rag_agent = get_rag_agent()
+        if not rag_agent:
+            return jsonify({'success': False, 'error': 'RAG system not initialized. Check GEMINI_API_KEY'}), 500
+        
+        response = rag_agent.chat(
+            message=message,
+            user_id=user_id
+        )
+        
+        return jsonify({
+            'success': True,
+            'response': response
+        }), 200
+        
+    except Exception as e:
+        print(f"❌ RAG chat error: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+# ============================================================================
+# INDIVIDUAL AGENT TOOL ENDPOINTS
+# ============================================================================
+
+@app.route('/api/agent/analyze-job', methods=['POST'])
+def analyze_job():
+    """Tool 1: Analyze job description using JobAnalyzerAgent"""
+    try:
+        data = request.json
+        job_description = data.get('job_description', '')
+        
+        if not job_description:
+            return jsonify({'success': False, 'error': 'Job description required'}), 400
+        
+        import sys
+        sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'agents'))
+        from job_analyzer import JobAnalyzerAgent
+        
+        agent = JobAnalyzerAgent()
+        analysis = agent.analyze_job_description(job_description)
+        
+        return jsonify({
+            'success': True,
+            'tool': 'Job Analyzer (Tool 1)',
+            'analysis': analysis
+        }), 200
+        
+    except Exception as e:
+        print(f"❌ Job analysis error: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/agent/analyze-resume', methods=['POST'])
+def analyze_resume_agent():
+    """Tool 2: Analyze resume using ResumeAgent"""
+    try:
+        data = request.json
+        resume_text = data.get('resume_text', '')
+        
+        if not resume_text:
+            return jsonify({'success': False, 'error': 'Resume text required'}), 400
+        
+        import sys
+        sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'agents'))
+        from resume_analyzer import ResumeAgent
+        
+        agent = ResumeAgent()
+        analysis = agent.analyze_resume(resume_text)
+        
+        return jsonify({
+            'success': True,
+            'tool': 'Resume Analyzer (Tool 2)',
+            'analysis': analysis
+        }), 200
+        
+    except Exception as e:
+        print(f"❌ Resume analysis error: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/agent/create-strategy', methods=['POST'])
+def create_strategy():
+    """Tool 3: Create matching strategy using StrategyAgent"""
+    try:
+        data = request.json
+        resume_text = data.get('resume_text', '')
+        job_description = data.get('job_description', '')
+        
+        if not resume_text or not job_description:
+            return jsonify({'success': False, 'error': 'Both resume and job description required'}), 400
+        
+        import sys
+        sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'agents'))
+        from strategy_creator import StrategyAgent
+        
+        agent = StrategyAgent()
+        job_analysis = agent.analyze_job_description(job_description)
+        resume_data = agent.analyze_resume(resume_text)
+        strategy = agent.create_matching_strategy(job_analysis, resume_data)
+        
+        return jsonify({
+            'success': True,
+            'tool': 'Strategy Creator (Tool 3)',
+            'job_analysis': job_analysis,
+            'resume_data': resume_data,
+            'strategy': strategy
+        }), 200
+        
+    except Exception as e:
+        print(f"❌ Strategy creation error: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/agent/full-pipeline', methods=['POST'])
+def full_pipeline():
+    """Run complete 4-tool pipeline and return LaTeX resume"""
+    try:
+        data = request.json
+        resume_text = data.get('resume_text', '')
+        job_description = data.get('job_description', '')
+        
+        if not resume_text or not job_description:
+            return jsonify({'success': False, 'error': 'Both resume and job description required'}), 400
+        
+        import sys
+        sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'agents'))
+        from resume_generator import ResumeGeneratorAgent
+        
+        agent = ResumeGeneratorAgent()
+        
+        # Run all 4 tools
+        print("🔧 Tool 1: Analyzing job...")
+        job_analysis = agent.analyze_job_description(job_description)
+        
+        print("🔧 Tool 2: Analyzing resume...")
+        resume_data = agent.analyze_resume(resume_text)
+        
+        print("🔧 Tool 3: Creating strategy...")
+        strategy = agent.create_matching_strategy(job_analysis, resume_data)
+        
+        print("🔧 Tool 4: Generating LaTeX...")
+        latex = agent.generate_tailored_resume(resume_data, strategy, job_analysis)
+        
+        return jsonify({
+            'success': True,
+            'tools_used': ['Job Analyzer', 'Resume Analyzer', 'Strategy Creator', 'Resume Generator'],
+            'job_analysis': job_analysis,
+            'resume_data': resume_data,
+            'strategy': strategy,
+            'latex': latex
+        }), 200
+        
+    except Exception as e:
+        print(f"❌ Full pipeline error: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+# ============================================================================
+# GENERATE TAILORED RESUME ENDPOINT
+# ============================================================================
+
+@app.route('/api/resume/generate-tailored', methods=['POST'])
+def generate_tailored_resume():
+    """Generate a complete tailored resume in LaTeX format"""
+    user = get_current_user()
+    user_id = str(user.id) if user else session.get('demo_user_id', 'demo_user')
+    
+    try:
+        data = request.json
+        resume_text = data.get('resume_text', '')
+        job_description = data.get('job_description', '')
+        
+        if not resume_text:
+            return jsonify({'success': False, 'error': 'Missing resume text'}), 400
+        
+        if not job_description:
+            return jsonify({'success': False, 'error': 'Job description required for tailored resume generation'}), 400
+        
+        # Import the resume generator
+        import sys
+        sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'agents'))
+        
+        from resume_generator import ResumeGeneratorAgent
+        
+        print(f"📄 Generating tailored resume for user {user_id}...")
+        
+        # Create the agent
+        generator = ResumeGeneratorAgent()
+        
+        # Run the complete pipeline (analyze job, analyze resume, create strategy, generate)
+        # This runs Tools 1-4
+        job_analysis = generator.analyze_job_description(job_description)
+        resume_data = generator.analyze_resume(resume_text)
+        strategy = generator.create_matching_strategy(job_analysis, resume_data)
+        
+        # Generate the LaTeX resume
+        latex_content = generator.generate_tailored_resume(resume_data, strategy, job_analysis)
+        
+        print(f"✅ LaTeX resume generated: {len(latex_content)} characters")
+        
+        return jsonify({
+            'success': True,
+            'latex': latex_content,
+            'strategy': strategy,
+            'job_analysis': job_analysis,
+            'filename': f'tailored_resume_{user_id}.tex'
+        }), 200
+        
+    except Exception as e:
+        print(f"❌ Resume generation error: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 # ============================================================================
